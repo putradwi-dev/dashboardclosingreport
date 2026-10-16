@@ -11,8 +11,8 @@
         body { font-family: 'Inter', sans-serif; }
     </style>
 </head>
-<body class="bg-slate-900 text-slate-100 min-h-screen p-4 md:p-8 flex items-center justify-center">
-    <div class="w-full max-w-2xl bg-slate-800 rounded-2xl shadow-2xl border border-slate-700 overflow-hidden">
+<body class="bg-slate-100 text-slate-800 min-h-screen p-4 md:p-8 flex items-center justify-center">
+    <div class="w-full max-w-2xl bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden">
         <!-- Header -->
         <div class="bg-gradient-to-r from-blue-600 to-indigo-600 p-6 text-center">
             <h1 class="text-xl md:text-2xl font-bold tracking-wide text-white">Closing Report E-commerce Tangerang</h1>
@@ -28,34 +28,34 @@
             <!-- Grid Summary Cards -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <!-- Leads Today -->
-                <div class="bg-slate-900/50 rounded-xl p-4 border border-slate-700/60">
-                    <h2 class="text-xs font-semibold text-blue-400 uppercase tracking-wider mb-1">Leads Today</h2>
-                    <div class="text-2xl font-bold text-white">53</div>
+                <div class="bg-slate-50 rounded-xl p-4 border border-slate-200 shadow-sm">
+                    <h2 class="text-xs font-semibold text-blue-600 uppercase tracking-wider mb-1">Leads Today</h2>
+                    <div class="text-2xl font-bold text-slate-800">53</div>
                 </div>
                 <!-- Closing Today -->
-                <div class="bg-slate-900/50 rounded-xl p-4 border border-slate-700/60">
-                    <h2 class="text-xs font-semibold text-emerald-400 uppercase tracking-wider mb-1">Closing Today</h2>
-                    <div class="text-2xl font-bold text-emerald-400">9 <span class="text-xs font-normal text-slate-400">(17%)</span></div>
+                <div class="bg-slate-50 rounded-xl p-4 border border-slate-200 shadow-sm">
+                    <h2 class="text-xs font-semibold text-emerald-600 uppercase tracking-wider mb-1">Closing Today</h2>
+                    <div class="text-2xl font-bold text-emerald-600">9 <span class="text-xs font-normal text-slate-500">(17%)</span></div>
                 </div>
                 <!-- Omzet Today -->
-                <div class="bg-slate-900/50 rounded-xl p-4 border border-slate-700/60">
-                    <h2 class="text-xs font-semibold text-amber-400 uppercase tracking-wider mb-1">Omzet Today</h2>
-                    <div class="text-lg font-bold text-amber-400">Rp19.552.000</div>
+                <div class="bg-slate-50 rounded-xl p-4 border border-slate-200 shadow-sm">
+                    <h2 class="text-xs font-semibold text-amber-600 uppercase tracking-wider mb-1">Omzet Today</h2>
+                    <div class="text-lg font-bold text-amber-600">Rp19.552.000</div>
                 </div>
             </div>
 
             <!-- Charts Section -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <!-- Chart 1: Daily Comparison -->
-                <div class="bg-slate-900/50 rounded-xl p-4 border border-slate-700/60 flex flex-col items-center">
-                    <h2 class="text-xs font-semibold text-blue-400 uppercase tracking-wider mb-3 w-full text-left">Performa Harian (Today)</h2>
+                <div class="bg-slate-50 rounded-xl p-4 border border-slate-200 shadow-sm flex flex-col items-center">
+                    <h2 class="text-xs font-semibold text-blue-600 uppercase tracking-wider mb-3 w-full text-left">Performa Harian (Today)</h2>
                     <div class="w-full h-48 relative flex items-center justify-center">
                         <canvas id="todayChart"></canvas>
                     </div>
                 </div>
                 <!-- Chart 2: MTD Conversion -->
-                <div class="bg-slate-900/50 rounded-xl p-4 border border-slate-700/60 flex flex-col items-center">
-                    <h2 class="text-xs font-semibold text-purple-400 uppercase tracking-wider mb-3 w-full text-left">MTD Conversion Rate</h2>
+                <div class="bg-slate-50 rounded-xl p-4 border border-slate-200 shadow-sm flex flex-col items-center">
+                    <h2 class="text-xs font-semibold text-purple-600 uppercase tracking-wider mb-3 w-full text-left">MTD Conversion Rate</h2>
                     <div class="w-full h-48 relative flex items-center justify-center">
                         <canvas id="mtdChart"></canvas>
                     </div>
@@ -63,31 +63,31 @@
             </div>
 
             <!-- MTD (Month To Date) Details Table/Box -->
-            <div class="bg-slate-900/50 rounded-xl p-4 border border-slate-700/60 space-y-3">
-                <h2 class="text-xs font-semibold text-purple-400 uppercase tracking-wider mb-3">MTD (Month To Date) Summary</h2>
+            <div class="bg-slate-50 rounded-xl p-4 border border-slate-200 shadow-sm space-y-3">
+                <h2 class="text-xs font-semibold text-purple-600 uppercase tracking-wider mb-3">MTD (Month To Date) Summary</h2>
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-                    <div class="bg-slate-800/60 p-3 rounded-lg border border-slate-700/40">
-                        <div class="text-xs text-slate-400">Total Leads</div>
-                        <div class="text-lg font-bold text-slate-100 mt-1">660</div>
+                    <div class="bg-white p-3 rounded-lg border border-slate-200 shadow-sm">
+                        <div class="text-xs text-slate-500">Total Leads</div>
+                        <div class="text-lg font-bold text-slate-800 mt-1">660</div>
                     </div>
-                    <div class="bg-slate-800/60 p-3 rounded-lg border border-slate-700/40">
-                        <div class="text-xs text-slate-400">Total Closing</div>
-                        <div class="text-lg font-bold text-slate-100 mt-1">296</div>
+                    <div class="bg-white p-3 rounded-lg border border-slate-200 shadow-sm">
+                        <div class="text-xs text-slate-500">Total Closing</div>
+                        <div class="text-lg font-bold text-slate-800 mt-1">296</div>
                     </div>
-                    <div class="bg-slate-800/60 p-3 rounded-lg border border-slate-700/40">
-                        <div class="text-xs text-slate-400">Total Omzet</div>
-                        <div class="text-sm font-bold text-purple-400 mt-1">Rp1.035.014.526</div>
+                    <div class="bg-white p-3 rounded-lg border border-slate-200 shadow-sm">
+                        <div class="text-xs text-slate-500">Total Omzet</div>
+                        <div class="text-sm font-bold text-purple-600 mt-1">Rp1.035.014.526</div>
                     </div>
-                    <div class="bg-slate-800/60 p-3 rounded-lg border border-slate-700/40">
-                        <div class="text-xs text-slate-400">Closing Rate MTD</div>
-                        <div class="text-lg font-bold text-purple-400 mt-1">45%</div>
+                    <div class="bg-white p-3 rounded-lg border border-slate-200 shadow-sm">
+                        <div class="text-xs text-slate-500">Closing Rate MTD</div>
+                        <div class="text-lg font-bold text-purple-600 mt-1">45%</div>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- Footer -->
-        <div class="bg-slate-900 px-6 py-4 text-center border-t border-slate-800 text-xs text-slate-500">
+        <div class="bg-slate-50 px-6 py-4 text-center border-t border-slate-200 text-xs text-slate-500">
             &copy; 2026 E-commerce Tangerang Dashboard
         </div>
     </div>
@@ -103,7 +103,7 @@
                 datasets: [{
                     label: 'Jumlah',
                     data: [53, 9],
-                    backgroundColor: ['#3b82f6', '#10b981'],
+                    backgroundColor: ['#2563eb', '#059669'],
                     borderWidth: 0,
                     borderRadius: 6
                 }]
@@ -117,12 +117,12 @@
                 scales: {
                     y: { 
                         beginAtZero: true,
-                        grid: { color: 'rgba(255, 255, 255, 0.05)' },
-                        ticks: { color: '#94a3b8' }
+                        grid: { color: 'rgba(0, 0, 0, 0.05)' },
+                        ticks: { color: '#64748b' }
                     },
                     x: { 
                         grid: { display: false },
-                        ticks: { color: '#94a3b8' }
+                        ticks: { color: '#64748b' }
                     }
                 }
             }
@@ -136,7 +136,7 @@
                 labels: ['Total Closing', 'Sisa Leads (Belum Closing)'],
                 datasets: [{
                     data: [296, 660 - 296],
-                    backgroundColor: ['#a855f7', '#334155'],
+                    backgroundColor: ['#9333ea', '#e2e8f0'],
                     borderWidth: 0
                 }]
             },
@@ -146,7 +146,7 @@
                 plugins: {
                     legend: {
                         position: 'bottom',
-                        labels: { color: '#94a3b8', boxWidth: 12, font: { size: 11 } }
+                        labels: { color: '#64748b', boxWidth: 12, font: { size: 11 } }
                     }
                 }
             }
