@@ -76,7 +76,7 @@
 
             <!-- Hasil Kalkulasi Otomatis Preview -->
             <div class="bg-[#EFEAE1] p-4 rounded-xl border border-[#E3DCD0] space-y-3">
-                <h2 class="text-xs font-extrabold text-[#523F63] uppercase tracking-wider">PREVIEW KALKULASi RUMUS OTOMATIS</h2>
+                <h2 class="text-xs font-extrabold text-[#523F63] uppercase tracking-wider">PREVIEW KALKULASI RUMUS OTOMATIS</h2>
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-center">
                     <div class="bg-white p-2.5 rounded-lg border border-[#E3DCD0]">
                         <div class="text-[10px] font-bold text-[#78726A]">CLOSING RATE TODAY</div>
@@ -101,12 +101,12 @@
                 </div>
             </div>
 
-            <!-- Tombol Export JSON -->
+            <!-- Tombol Simpan & Update -->
             <div class="space-y-2">
-                <button type="button" id="downloadJsonBtn" class="w-full bg-[#8C7A6B] hover:bg-[#786657] text-[#FAF7F2] font-bold py-3 px-4 rounded-xl shadow-md transition duration-200 text-sm">
-                    📥 DOWNLOAD FILE DATA.JSON BARU
+                <button type="button" id="saveUpdateBtn" class="w-full bg-[#5A7863] hover:bg-[#496351] text-[#FAF7F2] font-bold py-3 px-4 rounded-xl shadow-md transition duration-200 text-sm flex items-center justify-center gap-2">
+                    <span>💾</span> SIMPAN & UPDATE
                 </button>
-                <p class="text-[11px] text-[#8A8379] text-center">Unduh file <code>data.json</code> ini lalu commit/upload ke repository GitHub Anda untuk meng-update tampilan web secara live!</p>
+                <p id="saveStatus" class="text-xs font-semibold text-center text-emerald-700 hidden">✓ Data berhasil disimpan! Halaman index.html kini otomatis diperbarui.</p>
             </div>
         </form>
 
@@ -118,23 +118,34 @@
     </div>
 
     <script>
-        // Load data.json awal jika ada
-        fetch('data.json')
-            .then(res => res.json())
-            .then(data => {
-                document.getElementById('cs_name').value = data.cs_name || '';
-                document.getElementById('tanggal').value = data.tanggal || '';
-                document.getElementById('leads_sebelumnya').value = data.leads_sebelumnya || 0;
-                document.getElementById('closing_sebelumnya').value = data.closing_sebelumnya || 0;
-                document.getElementById('omzet_sebelumnya').value = data.omzet_sebelumnya || 0;
-                document.getElementById('leads_today').value = data.leads_today || 0;
-                document.getElementById('closing_today').value = data.closing_today || 0;
-                document.getElementById('omzet_today').value = data.omzet_today || 0;
-                calculatePreview();
-            })
-            .catch(() => calculatePreview());
+        // Ambil data dari localStorage atau data.json sebagai rujukan awal
+        function loadInitialData() {
+            const savedData = localStorage.getItem('reportData');
+            if (savedData) {
+                populateForm(JSON.parse(savedData));
+            } else {
+                fetch('data.json')
+                    .then(res => res.json())
+                    .then(data => {
+                        populateForm(data);
+                    })
+                    .catch(() => calculatePreview());
+            }
+        }
 
-        // Event listener kalkulasi otomatis saat angka diubah
+        function populateForm(data) {
+            document.getElementById('cs_name').value = data.cs_name || '';
+            document.getElementById('tanggal').value = data.tanggal || '';
+            document.getElementById('leads_sebelumnya').value = data.leads_sebelumnya || 0;
+            document.getElementById('closing_sebelumnya').value = data.closing_sebelumnya || 0;
+            document.getElementById('omzet_sebelumnya').value = data.omzet_sebelumnya || 0;
+            document.getElementById('leads_today').value = data.leads_today || 0;
+            document.getElementById('closing_today').value = data.closing_today || 0;
+            document.getElementById('omzet_today').value = data.omzet_today || 0;
+            calculatePreview();
+        }
+
+        // Event listener kalkulasi otomatis
         const inputs = ['leads_sebelumnya', 'closing_sebelumnya', 'omzet_sebelumnya', 'leads_today', 'closing_today', 'omzet_today'];
         inputs.forEach(id => {
             document.getElementById(id).addEventListener('input', calculatePreview);
@@ -149,14 +160,12 @@
             const c_today = parseInt(document.getElementById('closing_today').value) || 0;
             const o_today = parseInt(document.getElementById('omzet_today').value) || 0;
 
-            // Rumus
             const closingRateToday = l_today > 0 ? Math.round((c_today / l_today) * 100) : 0;
             const totalLeadsMTD = l_prev + l_today;
             const totalClosingMTD = c_prev + c_today;
             const totalOmzetMTD = o_prev + o_today;
             const closingRateMTD = totalLeadsMTD > 0 ? Math.round((totalClosingMTD / totalLeadsMTD) * 100) : 0;
 
-            // Display Preview
             document.getElementById('calc_closing_rate').innerText = closingRateToday + '%';
             document.getElementById('calc_total_leads').innerText = totalLeadsMTD.toLocaleString('id-ID');
             document.getElementById('calc_total_closing').innerText = totalClosingMTD.toLocaleString('id-ID');
@@ -164,8 +173,8 @@
             document.getElementById('calc_total_omzet').innerText = 'Rp' + totalOmzetMTD.toLocaleString('id-ID');
         }
 
-        // Export data.json saat tombol diklik
-        document.getElementById('downloadJsonBtn').addEventListener('click', () => {
+        // SIMPAN & UPDATE langsung ke localStorage
+        document.getElementById('saveUpdateBtn').addEventListener('click', () => {
             const payload = {
                 cs_name: document.getElementById('cs_name').value,
                 tanggal: document.getElementById('tanggal').value,
@@ -177,14 +186,18 @@
                 omzet_today: parseInt(document.getElementById('omzet_today').value) || 0
             };
 
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(payload, null, 4));
-            const downloadAnchor = document.createElement('a');
-            downloadAnchor.setAttribute("href", dataStr);
-            downloadAnchor.setAttribute("download", "data.json");
-            document.body.appendChild(downloadAnchor);
-            downloadAnchor.click();
-            downloadAnchor.remove();
+            // Simpan ke LocalStorage browser
+            localStorage.setItem('reportData', JSON.stringify(payload));
+
+            // Tampilkan Notifikasi Berhasil
+            const status = document.getElementById('saveStatus');
+            status.classList.remove('hidden');
+            setTimeout(() => {
+                status.classList.add('hidden');
+            }, 3000);
         });
+
+        loadInitialData();
     </script>
 </body>
 </html>
