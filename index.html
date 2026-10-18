@@ -158,8 +158,7 @@
                         x: { grid: { display: false }, ticks: { color: '#78726A' } }
                     }
                 }
-            }
-        });
+            });
 
             // Chart MTD
             if (mtdChart) mtdChart.destroy();
@@ -184,11 +183,22 @@
             });
         }
 
-        // Murni membaca file data.json online dengan cache busting agar selalu update untuk semua orang
+        // Ambil data dari data.json online (dengan fallback ke localStorage jika GitHub Pages masih proses building)
         fetch('data.json?v=' + Date.now())
-            .then(response => response.json())
-            .then(data => renderData(data))
-            .catch(err => console.error("Gagal memuat data.json:", err));
+            .then(response => {
+                if (!response.ok) throw new Error('Network response was not ok');
+                return response.json();
+            })
+            .then(data => {
+                renderData(data);
+            })
+            .catch(err => {
+                console.warn("Menggunakan fallback localStorage karena fetch data.json tertunda:", err);
+                const localData = localStorage.getItem('reportData');
+                if (localData) {
+                    renderData(JSON.parse(localData));
+                }
+            });
     </script>
 </body>
 </html>
