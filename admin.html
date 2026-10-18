@@ -14,8 +14,7 @@
     <div class="w-full max-w-2xl bg-[#F5F0E6] rounded-2xl shadow-lg border border-[#E3DCD0] overflow-hidden">
         <!-- Header -->
         <div class="bg-[#8C7A6B] p-6 text-center shadow-sm">
-            <h1 class="text-xl md:text-2xl font-bold tracking-wide text-[#FAF7F2]">PANEL ADMIN INPUT REPORT</h1>
-            <p class="text-xs text-[#F0EAE1] mt-1">Update Data Live untuk Semua Pengunjung Web (data.json)</p>
+            <h1 class="text-xl md:text-2xl font-bold tracking-wide text-[#FAF7F2]">INPUT CLOSING REPORT</h1>
         </div>
 
         <!-- Form Body -->
@@ -38,7 +37,7 @@
 
             <!-- Data Akumulasi Sebelumnya (Akumulasi MTD Lalu) -->
             <div class="bg-[#FAF7F2] p-4 rounded-xl border border-[#E8E1D5] space-y-4">
-                <h2 class="text-xs font-extrabold text-[#6B5B7B] uppercase tracking-wider">DATA SEBELUMNYA (MTD AKUMULASI LALU)</h2>
+                <h2 class="text-xs font-extrabold text-[#6B5B7B] uppercase tracking-wider">DATA SEBELUMNYA</h2>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
                         <label class="block text-xs font-bold text-[#78726A] mb-1">LEADS SEBELUMNYA</label>
@@ -57,7 +56,7 @@
 
             <!-- Input Performa Hari Ini (Manual Input) -->
             <div class="bg-[#FAF7F2] p-4 rounded-xl border border-[#E8E1D5] space-y-4">
-                <h2 class="text-xs font-extrabold text-[#5A7863] uppercase tracking-wider">PERFORMA HARI INI (MANUAL)</h2>
+                <h2 class="text-xs font-extrabold text-[#5A7863] uppercase tracking-wider">PERFORMA HARI INI (INPUT MANUAL)</h2>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
                         <label class="block text-xs font-bold text-[#78726A] mb-1">LEADS TODAY</label>
@@ -105,23 +104,15 @@
             <div class="space-y-4 pt-2">
                 <!-- Opsi 1: Direct GitHub Commit API (Opsional) -->
                 <div class="bg-[#FAF7F2] p-4 rounded-xl border border-[#E8E1D5] space-y-3">
-                    <h2 class="text-xs font-extrabold text-[#8C7A6B] uppercase tracking-wider">🚀 SIMPAN & UPDATE LANGSUNG KE GITHUB (LIVE UNTUK SEMUA ORANG)</h2>
                     <p class="text-[11px] text-[#78726A]">Masukkan GitHub Token Anda sekali saja. Saat tombol diklik, file <code>data.json</code> di GitHub Repository akan otomatis ter-update online sehingga orang lain langsung melihat data terbaru!</p>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                         <input type="text" id="gh_repo" placeholder="username/repository-name" class="bg-[#F5F0E6] border border-[#E3DCD0] rounded-lg p-2 text-xs font-semibold text-[#33312E]">
                         <input type="password" id="gh_token" placeholder="GitHub Personal Access Token (ghp_...)" class="bg-[#F5F0E6] border border-[#E3DCD0] rounded-lg p-2 text-xs font-semibold text-[#33312E]">
                     </div>
                     <button type="button" id="githubUpdateBtn" class="w-full bg-[#5A7863] hover:bg-[#496351] text-[#FAF7F2] font-bold py-3 px-4 rounded-xl shadow-md transition duration-200 text-sm flex items-center justify-center gap-2">
-                        <span>🚀</span> SIMPAN & UPDATE LANGSUNG KE GITHUB
+                        SIMPAN & UPDATE
                     </button>
                     <p id="githubStatus" class="text-xs font-semibold text-center hidden"></p>
-                </div>
-
-                <!-- Opsi 2: Download data.json -->
-                <div class="text-center">
-                    <button type="button" id="downloadJsonBtn" class="text-xs text-[#8C7A6B] hover:underline font-bold">
-                        📥 Atau Klik di sini untuk mengunduh file data.json secara manual
-                    </button>
                 </div>
             </div>
         </form>
