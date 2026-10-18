@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Input - Closing Report E-commerce Tangerang</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    </style>
+</head>
+<body class="bg-[#FBF9F1] text-[#33312E] min-h-screen p-4 md:p-8 flex items-center justify-center">
+    <div class="w-full max-w-2xl bg-[#F5F0E6] rounded-2xl shadow-lg border border-[#E3DCD0] overflow-hidden">
+        <!-- Header -->
+        <div class="bg-[#8C7A6B] p-6 text-center shadow-sm">
+            <h1 class="text-xl md:text-2xl font-bold tracking-wide text-[#FAF7F2]">PANEL ADMIN INPUT REPORT</h1>
+            <p class="text-xs text-[#F0EAE1] mt-1">Kelola Data Harian & Otomatisasi Perhitungan MTD</p>
+        </div>
+
+        <!-- Form Body -->
+        <form id="reportForm" class="p-6 space-y-6">
+            
+            <!-- Informasi Umum -->
+            <div class="bg-[#FAF7F2] p-4 rounded-xl border border-[#E8E1D5] space-y-4">
+                <h2 class="text-xs font-extrabold text-[#8C6D46] uppercase tracking-wider">INFORMASI UMUM</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-[#78726A] mb-1">NAMA CS</label>
+                        <input type="text" id="cs_name" class="w-full bg-[#F5F0E6] border border-[#E3DCD0] rounded-lg p-2.5 text-sm font-semibold text-[#33312E] focus:outline-none focus:ring-2 focus:ring-[#8C7A6B]" required>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-[#78726A] mb-1">TANGGAL (DD/MM/YYYY)</label>
+                        <input type="text" id="tanggal" class="w-full bg-[#F5F0E6] border border-[#E3DCD0] rounded-lg p-2.5 text-sm font-semibold text-[#33312E] focus:outline-none focus:ring-2 focus:ring-[#8C7A6B]" required>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Data Akumulasi Sebelumnya (Akumulasi MTD Lalu) -->
+            <div class="bg-[#FAF7F2] p-4 rounded-xl border border-[#E8E1D5] space-y-4">
+                <h2 class="text-xs font-extrabold text-[#6B5B7B] uppercase tracking-wider">DATA SEBELUMNYA (MTD AKUMULASI LALU)</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-[#78726A] mb-1">LEADS SEBELUMNYA</label>
+                        <input type="number" id="leads_sebelumnya" class="w-full bg-[#F5F0E6] border border-[#E3DCD0] rounded-lg p-2.5 text-sm font-semibold text-[#33312E] focus:outline-none focus:ring-2 focus:ring-[#6B5B7B]" required>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-[#78726A] mb-1">CLOSING SEBELUMNYA</label>
+                        <input type="number" id="closing_sebelumnya" class="w-full bg-[#F5F0E6] border border-[#E3DCD0] rounded-lg p-2.5 text-sm font-semibold text-[#33312E] focus:outline-none focus:ring-2 focus:ring-[#6B5B7B]" required>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-[#78726A] mb-1">OMZET SEBELUMNYA (Rp)</label>
+                        <input type="number" id="omzet_sebelumnya" class="w-full bg-[#F5F0E6] border border-[#E3DCD0] rounded-lg p-2.5 text-sm font-semibold text-[#33312E] focus:outline-none focus:ring-2 focus:ring-[#6B5B7B]" required>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Input Performa Hari Ini (Manual Input) -->
+            <div class="bg-[#FAF7F2] p-4 rounded-xl border border-[#E8E1D5] space-y-4">
+                <h2 class="text-xs font-extrabold text-[#5A7863] uppercase tracking-wider">PERFORMA HARI INI (MANUAL)</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-[#78726A] mb-1">LEADS TODAY</label>
+                        <input type="number" id="leads_today" class="w-full bg-[#F5F0E6] border border-[#E3DCD0] rounded-lg p-2.5 text-sm font-semibold text-[#33312E] focus:outline-none focus:ring-2 focus:ring-[#5A7863]" required>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-[#78726A] mb-1">CLOSING TODAY</label>
+                        <input type="number" id="closing_today" class="w-full bg-[#F5F0E6] border border-[#E3DCD0] rounded-lg p-2.5 text-sm font-semibold text-[#33312E] focus:outline-none focus:ring-2 focus:ring-[#5A7863]" required>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-[#78726A] mb-1">OMZET TODAY (Rp)</label>
+                        <input type="number" id="omzet_today" class="w-full bg-[#F5F0E6] border border-[#E3DCD0] rounded-lg p-2.5 text-sm font-semibold text-[#33312E] focus:outline-none focus:ring-2 focus:ring-[#5A7863]" required>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hasil Kalkulasi Otomatis Preview -->
+            <div class="bg-[#EFEAE1] p-4 rounded-xl border border-[#E3DCD0] space-y-3">
+                <h2 class="text-xs font-extrabold text-[#523F63] uppercase tracking-wider">PREVIEW KALKULASi RUMUS OTOMATIS</h2>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-center">
+                    <div class="bg-white p-2.5 rounded-lg border border-[#E3DCD0]">
+                        <div class="text-[10px] font-bold text-[#78726A]">CLOSING RATE TODAY</div>
+                        <div id="calc_closing_rate" class="text-sm font-bold text-[#5A7863] mt-1">0%</div>
+                    </div>
+                    <div class="bg-white p-2.5 rounded-lg border border-[#E3DCD0]">
+                        <div class="text-[10px] font-bold text-[#78726A]">TOTAL LEADS MTD</div>
+                        <div id="calc_total_leads" class="text-sm font-bold text-[#33312E] mt-1">0</div>
+                    </div>
+                    <div class="bg-white p-2.5 rounded-lg border border-[#E3DCD0]">
+                        <div class="text-[10px] font-bold text-[#78726A]">TOTAL CLOSING MTD</div>
+                        <div id="calc_total_closing" class="text-sm font-bold text-[#33312E] mt-1">0</div>
+                    </div>
+                    <div class="bg-white p-2.5 rounded-lg border border-[#E3DCD0]">
+                        <div class="text-[10px] font-bold text-[#78726A]">CLOSING RATE MTD</div>
+                        <div id="calc_closing_rate_mtd" class="text-sm font-bold text-[#6B5B7B] mt-1">0%</div>
+                    </div>
+                </div>
+                <div class="bg-white p-2.5 rounded-lg border border-[#E3DCD0] text-center">
+                    <div class="text-[10px] font-bold text-[#78726A]">TOTAL OMZET MTD</div>
+                    <div id="calc_total_omzet" class="text-base font-extrabold text-[#6B5B7B] mt-0.5">Rp0</div>
+                </div>
+            </div>
+
+            <!-- Tombol Export JSON -->
+            <div class="space-y-2">
+                <button type="button" id="downloadJsonBtn" class="w-full bg-[#8C7A6B] hover:bg-[#786657] text-[#FAF7F2] font-bold py-3 px-4 rounded-xl shadow-md transition duration-200 text-sm">
+                    📥 DOWNLOAD FILE DATA.JSON BARU
+                </button>
+                <p class="text-[11px] text-[#8A8379] text-center">Unduh file <code>data.json</code> ini lalu commit/upload ke repository GitHub Anda untuk meng-update tampilan web secara live!</p>
+            </div>
+        </form>
+
+        <!-- Footer -->
+        <div class="bg-[#EFEAE1] px-6 py-4 text-center border-t border-[#E3DCD0] space-y-1">
+            <div class="text-xs text-[#8A8379] font-medium">ADMIN PANEL E-COMMERCE TANGERANG &copy; 2026</div>
+            <div class="text-xs text-[#8C7A6B] font-semibold">by putradwi-dev</div>
+        </div>
+    </div>
+
+    <script>
+        // Load data.json awal jika ada
+        fetch('data.json')
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('cs_name').value = data.cs_name || '';
+                document.getElementById('tanggal').value = data.tanggal || '';
+                document.getElementById('leads_sebelumnya').value = data.leads_sebelumnya || 0;
+                document.getElementById('closing_sebelumnya').value = data.closing_sebelumnya || 0;
+                document.getElementById('omzet_sebelumnya').value = data.omzet_sebelumnya || 0;
+                document.getElementById('leads_today').value = data.leads_today || 0;
+                document.getElementById('closing_today').value = data.closing_today || 0;
+                document.getElementById('omzet_today').value = data.omzet_today || 0;
+                calculatePreview();
+            })
+            .catch(() => calculatePreview());
+
+        // Event listener kalkulasi otomatis saat angka diubah
+        const inputs = ['leads_sebelumnya', 'closing_sebelumnya', 'omzet_sebelumnya', 'leads_today', 'closing_today', 'omzet_today'];
+        inputs.forEach(id => {
+            document.getElementById(id).addEventListener('input', calculatePreview);
+        });
+
+        function calculatePreview() {
+            const l_prev = parseInt(document.getElementById('leads_sebelumnya').value) || 0;
+            const c_prev = parseInt(document.getElementById('closing_sebelumnya').value) || 0;
+            const o_prev = parseInt(document.getElementById('omzet_sebelumnya').value) || 0;
+
+            const l_today = parseInt(document.getElementById('leads_today').value) || 0;
+            const c_today = parseInt(document.getElementById('closing_today').value) || 0;
+            const o_today = parseInt(document.getElementById('omzet_today').value) || 0;
+
+            // Rumus
+            const closingRateToday = l_today > 0 ? Math.round((c_today / l_today) * 100) : 0;
+            const totalLeadsMTD = l_prev + l_today;
+            const totalClosingMTD = c_prev + c_today;
+            const totalOmzetMTD = o_prev + o_today;
+            const closingRateMTD = totalLeadsMTD > 0 ? Math.round((totalClosingMTD / totalLeadsMTD) * 100) : 0;
+
+            // Display Preview
+            document.getElementById('calc_closing_rate').innerText = closingRateToday + '%';
+            document.getElementById('calc_total_leads').innerText = totalLeadsMTD.toLocaleString('id-ID');
+            document.getElementById('calc_total_closing').innerText = totalClosingMTD.toLocaleString('id-ID');
+            document.getElementById('calc_closing_rate_mtd').innerText = closingRateMTD + '%';
+            document.getElementById('calc_total_omzet').innerText = 'Rp' + totalOmzetMTD.toLocaleString('id-ID');
+        }
+
+        // Export data.json saat tombol diklik
+        document.getElementById('downloadJsonBtn').addEventListener('click', () => {
+            const payload = {
+                cs_name: document.getElementById('cs_name').value,
+                tanggal: document.getElementById('tanggal').value,
+                leads_sebelumnya: parseInt(document.getElementById('leads_sebelumnya').value) || 0,
+                closing_sebelumnya: parseInt(document.getElementById('closing_sebelumnya').value) || 0,
+                omzet_sebelumnya: parseInt(document.getElementById('omzet_sebelumnya').value) || 0,
+                leads_today: parseInt(document.getElementById('leads_today').value) || 0,
+                closing_today: parseInt(document.getElementById('closing_today').value) || 0,
+                omzet_today: parseInt(document.getElementById('omzet_today').value) || 0
+            };
+
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(payload, null, 4));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", "data.json");
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        });
+    </script>
+</body>
+</html>
