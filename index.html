@@ -106,97 +106,93 @@
             return 'Rp' + number.toLocaleString('id-ID');
         }
 
-        fetch('data.json')
-            .then(response => response.json())
-            .then(data => {
-                // Parse Data Input Manual
-                const l_prev = parseInt(data.leads_sebelumnya) || 0;
-                const c_prev = parseInt(data.closing_sebelumnya) || 0;
-                const o_prev = parseInt(data.omzet_sebelumnya) || 0;
+        function renderData(data) {
+            const l_prev = parseInt(data.leads_sebelumnya) || 0;
+            const c_prev = parseInt(data.closing_sebelumnya) || 0;
+            const o_prev = parseInt(data.omzet_sebelumnya) || 0;
 
-                const l_today = parseInt(data.leads_today) || 0;
-                const c_today = parseInt(data.closing_today) || 0;
-                const o_today = parseInt(data.omzet_today) || 0;
+            const l_today = parseInt(data.leads_today) || 0;
+            const c_today = parseInt(data.closing_today) || 0;
+            const o_today = parseInt(data.omzet_today) || 0;
 
-                // --- Rumus Sesuai Permintaan ---
-                // 1. Closing Rate Today = (Closing Today / Leads Today) * 100%
-                const closingRateToday = l_today > 0 ? Math.round((c_today / l_today) * 100) : 0;
+            const closingRateToday = l_today > 0 ? Math.round((c_today / l_today) * 100) : 0;
+            const totalLeadsMTD = l_prev + l_today;
+            const totalClosingMTD = c_prev + c_today;
+            const totalOmzetMTD = o_prev + o_today;
+            const closingRateMTD = totalLeadsMTD > 0 ? Math.round((totalClosingMTD / totalLeadsMTD) * 100) : 0;
 
-                // 2. Total Leads MTD = Leads Sebelumnya + Leads Today
-                const totalLeadsMTD = l_prev + l_today;
+            document.getElementById('display_cs_name').innerText = data.cs_name || 'MARVELL TANGERANG';
+            document.getElementById('display_tanggal').innerText = data.tanggal || '-';
 
-                // 3. Total Closing MTD = Closing Sebelumnya + Closing Today
-                const totalClosingMTD = c_prev + c_today;
+            document.getElementById('display_leads_today').innerText = l_today.toLocaleString('id-ID');
+            document.getElementById('display_closing_today').innerText = c_today.toLocaleString('id-ID');
+            document.getElementById('display_closing_rate').innerText = closingRateToday + '%';
+            document.getElementById('display_omzet_today').innerText = formatRupiah(o_today);
 
-                // 4. Total Omzet MTD = Omzet Sebelumnya + Omzet Today
-                const totalOmzetMTD = o_prev + o_today;
+            document.getElementById('display_total_leads_mtd').innerText = totalLeadsMTD.toLocaleString('id-ID');
+            document.getElementById('display_total_closing_mtd').innerText = totalClosingMTD.toLocaleString('id-ID');
+            document.getElementById('display_total_omzet_mtd').innerText = formatRupiah(totalOmzetMTD);
+            document.getElementById('display_closing_rate_mtd').innerText = closingRateMTD + '%';
 
-                // 5. Closing Rate MTD = (Total Closing MTD / Total Leads MTD) * 100%
-                const closingRateMTD = totalLeadsMTD > 0 ? Math.round((totalClosingMTD / totalLeadsMTD) * 100) : 0;
-
-                // Display Header
-                document.getElementById('display_cs_name').innerText = data.cs_name || 'MARVELL TANGERANG';
-                document.getElementById('display_tanggal').innerText = data.tanggal || '-';
-
-                // Display Daily Performance
-                document.getElementById('display_leads_today').innerText = l_today.toLocaleString('id-ID');
-                document.getElementById('display_closing_today').innerText = c_today.toLocaleString('id-ID');
-                document.getElementById('display_closing_rate').innerText = closingRateToday + '%';
-                document.getElementById('display_omzet_today').innerText = formatRupiah(o_today);
-
-                // Display MTD Summary
-                document.getElementById('display_total_leads_mtd').innerText = totalLeadsMTD.toLocaleString('id-ID');
-                document.getElementById('display_total_closing_mtd').innerText = totalClosingMTD.toLocaleString('id-ID');
-                document.getElementById('display_total_omzet_mtd').innerText = formatRupiah(totalOmzetMTD);
-                document.getElementById('display_closing_rate_mtd').innerText = closingRateMTD + '%';
-
-                // Render Today Chart
-                const ctxToday = document.getElementById('todayChart').getContext('2d');
-                todayChart = new Chart(ctxToday, {
-                    type: 'bar',
-                    data: {
-                        labels: ['LEADS TODAY', 'CLOSING TODAY'],
-                        datasets: [{
-                            label: 'Jumlah',
-                            data: [l_today, c_today],
-                            backgroundColor: ['#8C6D46', '#5A7863'],
-                            borderWidth: 0,
-                            borderRadius: 6
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: { legend: { display: false } },
-                        scales: {
-                            y: { beginAtZero: true, grid: { color: 'rgba(140, 122, 107, 0.1)' }, ticks: { color: '#78726A' } },
-                            x: { grid: { display: false }, ticks: { color: '#78726A' } }
-                        }
+            // Chart Today
+            if (todayChart) todayChart.destroy();
+            const ctxToday = document.getElementById('todayChart').getContext('2d');
+            todayChart = new Chart(ctxToday, {
+                type: 'bar',
+                data: {
+                    labels: ['LEADS TODAY', 'CLOSING TODAY'],
+                    datasets: [{
+                        label: 'Jumlah',
+                        data: [l_today, c_today],
+                        backgroundColor: ['#8C6D46', '#5A7863'],
+                        borderWidth: 0,
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: 'rgba(140, 122, 107, 0.1)' }, ticks: { color: '#78726A' } },
+                        x: { grid: { display: false }, ticks: { color: '#78726A' } }
                     }
-                });
+                }
+            });
 
-                // Render MTD Chart
-                const ctxMtd = document.getElementById('mtdChart').getContext('2d');
-                mtdChart = new Chart(ctxMtd, {
-                    type: 'doughnut',
-                    data: {
-                        labels: ['TOTAL CLOSING', 'SISA LEADS (BELUM CLOSING)'],
-                        datasets: [{
-                            data: [totalClosingMTD, Math.max(0, totalLeadsMTD - totalClosingMTD)],
-                            backgroundColor: ['#6B5B7B', '#E3DCD0'],
-                            borderWidth: 0
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: { position: 'bottom', labels: { color: '#78726A', boxWidth: 12, font: { size: 11 } } }
-                        }
+            // Chart MTD
+            if (mtdChart) mtdChart.destroy();
+            const ctxMtd = document.getElementById('mtdChart').getContext('2d');
+            mtdChart = new Chart(ctxMtd, {
+                type: 'doughnut',
+                data: {
+                    labels: ['TOTAL CLOSING', 'SISA LEADS (BELUM CLOSING)'],
+                    datasets: [{
+                        data: [totalClosingMTD, Math.max(0, totalLeadsMTD - totalClosingMTD)],
+                        backgroundColor: ['#6B5B7B', '#E3DCD0'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom', labels: { color: '#78726A', boxWidth: 12, font: { size: 11 } } }
                     }
-                });
-            })
-            .catch(err => console.error("Gagal memuat data.json:", err));
+                }
+            });
+        }
+
+        // Cek apakah ada data di localStorage, jika tidak ada fallback ke data.json
+        const localData = localStorage.getItem('reportData');
+        if (localData) {
+            renderData(JSON.parse(localData));
+        } else {
+            fetch('data.json')
+                .then(response => response.json())
+                .then(data => renderData(data))
+                .catch(err => console.error("Gagal memuat data:", err));
+        }
     </script>
 </body>
 </html>
