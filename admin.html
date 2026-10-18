@@ -15,7 +15,7 @@
         <!-- Header -->
         <div class="bg-[#8C7A6B] p-6 text-center shadow-sm">
             <h1 class="text-xl md:text-2xl font-bold tracking-wide text-[#FAF7F2]">PANEL ADMIN INPUT REPORT</h1>
-            <p class="text-xs text-[#F0EAE1] mt-1">Kelola Data Harian & Otomatisasi Perhitungan MTD</p>
+            <p class="text-xs text-[#F0EAE1] mt-1">Update Data Live untuk Semua Pengunjung Web (data.json)</p>
         </div>
 
         <!-- Form Body -->
@@ -101,12 +101,28 @@
                 </div>
             </div>
 
-            <!-- Tombol Simpan & Update -->
-            <div class="space-y-2">
-                <button type="button" id="saveUpdateBtn" class="w-full bg-[#5A7863] hover:bg-[#496351] text-[#FAF7F2] font-bold py-3 px-4 rounded-xl shadow-md transition duration-200 text-sm flex items-center justify-center gap-2">
-                    <span>💾</span> SIMPAN & UPDATE
-                </button>
-                <p id="saveStatus" class="text-xs font-semibold text-center text-emerald-700 hidden">✓ Data berhasil disimpan! Halaman index.html kini otomatis diperbarui.</p>
+            <!-- OPSI UPDATE -->
+            <div class="space-y-4 pt-2">
+                <!-- Opsi 1: Direct GitHub Commit API (Opsional) -->
+                <div class="bg-[#FAF7F2] p-4 rounded-xl border border-[#E8E1D5] space-y-3">
+                    <h2 class="text-xs font-extrabold text-[#8C7A6B] uppercase tracking-wider">🚀 SIMPAN & UPDATE LANGSUNG KE GITHUB (LIVE UNTUK SEMUA ORANG)</h2>
+                    <p class="text-[11px] text-[#78726A]">Masukkan GitHub Token Anda sekali saja. Saat tombol diklik, file <code>data.json</code> di GitHub Repository akan otomatis ter-update online sehingga orang lain langsung melihat data terbaru!</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <input type="text" id="gh_repo" placeholder="username/repository-name" class="bg-[#F5F0E6] border border-[#E3DCD0] rounded-lg p-2 text-xs font-semibold text-[#33312E]">
+                        <input type="password" id="gh_token" placeholder="GitHub Personal Access Token (ghp_...)" class="bg-[#F5F0E6] border border-[#E3DCD0] rounded-lg p-2 text-xs font-semibold text-[#33312E]">
+                    </div>
+                    <button type="button" id="githubUpdateBtn" class="w-full bg-[#5A7863] hover:bg-[#496351] text-[#FAF7F2] font-bold py-3 px-4 rounded-xl shadow-md transition duration-200 text-sm flex items-center justify-center gap-2">
+                        <span>🚀</span> SIMPAN & UPDATE LANGSUNG KE GITHUB
+                    </button>
+                    <p id="githubStatus" class="text-xs font-semibold text-center hidden"></p>
+                </div>
+
+                <!-- Opsi 2: Download data.json -->
+                <div class="text-center">
+                    <button type="button" id="downloadJsonBtn" class="text-xs text-[#8C7A6B] hover:underline font-bold">
+                        📥 Atau Klik di sini untuk mengunduh file data.json secara manual
+                    </button>
+                </div>
             </div>
         </form>
 
@@ -118,34 +134,26 @@
     </div>
 
     <script>
-        // Ambil data dari localStorage atau data.json sebagai rujukan awal
-        function loadInitialData() {
-            const savedData = localStorage.getItem('reportData');
-            if (savedData) {
-                populateForm(JSON.parse(savedData));
-            } else {
-                fetch('data.json')
-                    .then(res => res.json())
-                    .then(data => {
-                        populateForm(data);
-                    })
-                    .catch(() => calculatePreview());
-            }
-        }
+        // Load data.json dari server (GitHub Pages)
+        fetch('data.json?v=' + Date.now())
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('cs_name').value = data.cs_name || '';
+                document.getElementById('tanggal').value = data.tanggal || '';
+                document.getElementById('leads_sebelumnya').value = data.leads_sebelumnya || 0;
+                document.getElementById('closing_sebelumnya').value = data.closing_sebelumnya || 0;
+                document.getElementById('omzet_sebelumnya').value = data.omzet_sebelumnya || 0;
+                document.getElementById('leads_today').value = data.leads_today || 0;
+                document.getElementById('closing_today').value = data.closing_today || 0;
+                document.getElementById('omzet_today').value = data.omzet_today || 0;
+                calculatePreview();
+            })
+            .catch(() => calculatePreview());
 
-        function populateForm(data) {
-            document.getElementById('cs_name').value = data.cs_name || '';
-            document.getElementById('tanggal').value = data.tanggal || '';
-            document.getElementById('leads_sebelumnya').value = data.leads_sebelumnya || 0;
-            document.getElementById('closing_sebelumnya').value = data.closing_sebelumnya || 0;
-            document.getElementById('omzet_sebelumnya').value = data.omzet_sebelumnya || 0;
-            document.getElementById('leads_today').value = data.leads_today || 0;
-            document.getElementById('closing_today').value = data.closing_today || 0;
-            document.getElementById('omzet_today').value = data.omzet_today || 0;
-            calculatePreview();
-        }
+        // Fill saved repo & token from localStorage if exists
+        document.getElementById('gh_repo').value = localStorage.getItem('gh_repo') || '';
+        document.getElementById('gh_token').value = localStorage.getItem('gh_token') || '';
 
-        // Event listener kalkulasi otomatis
         const inputs = ['leads_sebelumnya', 'closing_sebelumnya', 'omzet_sebelumnya', 'leads_today', 'closing_today', 'omzet_today'];
         inputs.forEach(id => {
             document.getElementById(id).addEventListener('input', calculatePreview);
@@ -173,9 +181,8 @@
             document.getElementById('calc_total_omzet').innerText = 'Rp' + totalOmzetMTD.toLocaleString('id-ID');
         }
 
-        // SIMPAN & UPDATE langsung ke localStorage
-        document.getElementById('saveUpdateBtn').addEventListener('click', () => {
-            const payload = {
+        function getPayload() {
+            return {
                 cs_name: document.getElementById('cs_name').value,
                 tanggal: document.getElementById('tanggal').value,
                 leads_sebelumnya: parseInt(document.getElementById('leads_sebelumnya').value) || 0,
@@ -185,19 +192,77 @@
                 closing_today: parseInt(document.getElementById('closing_today').value) || 0,
                 omzet_today: parseInt(document.getElementById('omzet_today').value) || 0
             };
+        }
 
-            // Simpan ke LocalStorage browser
-            localStorage.setItem('reportData', JSON.stringify(payload));
+        // Direct GitHub API Update
+        document.getElementById('githubUpdateBtn').addEventListener('click', async () => {
+            const repo = document.getElementById('gh_repo').value.trim();
+            const token = document.getElementById('gh_token').value.trim();
+            const statusEl = document.getElementById('githubStatus');
 
-            // Tampilkan Notifikasi Berhasil
-            const status = document.getElementById('saveStatus');
-            status.classList.remove('hidden');
-            setTimeout(() => {
-                status.classList.add('hidden');
-            }, 3000);
+            if (!repo || !token) {
+                alert("Harap isi Username/Repository dan GitHub Token terlebih dahulu!");
+                return;
+            }
+
+            localStorage.setItem('gh_repo', repo);
+            localStorage.setItem('gh_token', token);
+
+            statusEl.classList.remove('hidden', 'text-emerald-700', 'text-rose-600');
+            statusEl.classList.add('text-[#8C7A6B]');
+            statusEl.innerText = "⏳ Sedang memperbarui data.json di GitHub...";
+
+            try {
+                const url = `https://api.github.com/repos/${repo}/contents/data.json`;
+                
+                // 1. Get current SHA of data.json
+                let sha = "";
+                const getRes = await fetch(url, {
+                    headers: { 'Authorization': `token ${token}` }
+                });
+                if (getRes.ok) {
+                    const getData = await getRes.json();
+                    sha = getData.sha;
+                }
+
+                // 2. Commit updated data.json
+                const contentEncoded = btoa(unescape(encodeURIComponent(JSON.stringify(getPayload(), null, 4))));
+                const putRes = await fetch(url, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `token ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: `Update report data (${new Date().toLocaleString('id-ID')})`,
+                        content: contentEncoded,
+                        sha: sha || undefined
+                    })
+                });
+
+                if (putRes.ok) {
+                    statusEl.className = "text-xs font-semibold text-center text-emerald-700";
+                    statusEl.innerText = "✅ BERHASIL! Data di GitHub telah ter-update secara online. Semua pengunjung web yang membuka link sekarang melihat data terbaru.";
+                } else {
+                    const errData = await putRes.json();
+                    throw new Error(errData.message || "Gagal meng-update file di GitHub.");
+                }
+            } catch (err) {
+                statusEl.className = "text-xs font-semibold text-center text-rose-600";
+                statusEl.innerText = "❌ Terjadi Kesalahan: " + err.message;
+            }
         });
 
-        loadInitialData();
+        // Manual Download Fallback
+        document.getElementById('downloadJsonBtn').addEventListener('click', () => {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(getPayload(), null, 4));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", "data.json");
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        });
     </script>
 </body>
 </html>
