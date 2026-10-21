@@ -14,12 +14,17 @@
 <body class="bg-[#FBF9F1] text-[#33312E] min-h-screen p-4 md:p-8 flex items-center justify-center">
     <div class="w-full max-w-2xl bg-[#F5F0E6] rounded-2xl shadow-lg border border-[#E3DCD0] overflow-hidden space-y-6 pb-6">
         <!-- Header -->
-        <div class="bg-[#8C7A6B] p-6 text-center shadow-sm">
+        <div class="bg-[#8C7A6B] p-6 text-center shadow-sm space-y-2">
             <h1 class="text-xl md:text-2xl font-bold tracking-wide text-[#FAF7F2]">CLOSING REPORT E-COMMERCE TANGERANG</h1>
-            <div class="mt-3 inline-flex items-center gap-2 bg-[#FAF7F2]/15 px-4 py-1.5 rounded-full text-sm font-medium backdrop-blur-sm text-[#F0EAE1]">
-                <span>👤 <span id="display_cs_name">MARVELL TANGERANG</span></span>
-                <span>•</span>
-                <span>📅 <span id="display_tanggal">-</span></span>
+            <div class="flex flex-wrap items-center justify-center gap-2">
+                <div class="inline-flex items-center gap-2 bg-[#FAF7F2]/15 px-4 py-1.5 rounded-full text-xs font-medium backdrop-blur-sm text-[#F0EAE1]">
+                    <span>👤 <span id="display_cs_name">MARVELL TANGERANG</span></span>
+                    <span>•</span>
+                    <span>📅 <span id="display_tanggal">-</span></span>
+                </div>
+                <!-- Filter Bulan -->
+                <select id="monthFilter" class="bg-[#FAF7F2] text-[#33312E] text-xs font-bold px-3 py-1.5 rounded-full border border-[#E3DCD0] focus:outline-none cursor-pointer">
+                </select>
             </div>
         </div>
 
@@ -83,13 +88,11 @@
                 </div>
             </div>
 
-            <!-- TABEL RIWAYAT HARIAN (DENGAN MAKSIMAL 5 BARIS & SCROLL OTOMATIS) -->
+            <!-- TABEL RIWAYAT HARIAN -->
             <div class="bg-[#FAF7F2] rounded-xl p-4 border border-[#E8E1D5] space-y-3">
                 <h2 class="text-xs font-extrabold text-[#8C6D46] uppercase tracking-wider mb-2">RIWAYAT LAPORAN HARIAN</h2>
-                <!-- Container dengan batas tinggi (max-h-56) & scroll vertical (overflow-y-auto) -->
                 <div class="overflow-x-auto overflow-y-auto max-h-[220px] rounded-lg border border-[#E3DCD0]">
                     <table class="w-full text-left border-collapse text-xs">
-                        <!-- Sticky header agar judul kolom tidak ikut ter-scroll -->
                         <thead class="sticky top-0 bg-[#EFEAE1] text-[#78726A] shadow-xs z-10">
                             <tr class="border-b border-[#E3DCD0]">
                                 <th class="p-2.5 font-bold">TANGGAL</th>
@@ -115,6 +118,7 @@
 
     <script>
         let todayChart, mtdChart;
+        let globalData = {};
 
         function formatRupiah(number) {
             return 'Rp' + number.toLocaleString('id-ID');
@@ -123,109 +127,147 @@
         fetch('data.json?v=' + Date.now())
             .then(res => res.json())
             .then(data => {
+                globalData = data;
                 document.getElementById('display_cs_name').innerText = data.cs_name || 'MARVELL TANGERANG';
 
-                const baseline = data.initial_baseline || { leads: 0, closing: 0, omzet: 0 };
-                const history = data.history || [];
-                if (history.length === 0) return;
+                const months = data.months || {};
+                const monthKeys = Object.keys(months);
+                const filterSelect = document.getElementById('monthFilter');
 
-                // Hari Terakhir
-                const latest = history[history.length - 1];
-                document.getElementById('display_tanggal').innerText = latest.tanggal || '-';
-
-                const l_today = latest.leads_today || 0;
-                const c_today = latest.closing_today || 0;
-                const o_today = latest.omzet_today || 0;
-                const closingRateToday = l_today > 0 ? Math.round((c_today / l_today) * 100) : 0;
-
-                // Hitung Total MTD = Baseline + Semua History Harian
-                let totalLeadsMTD = baseline.leads || 0;
-                let totalClosingMTD = baseline.closing || 0;
-                let totalOmzetMTD = baseline.omzet || 0;
-
-                let tableHtml = '';
-                history.forEach(item => {
-                    const l = item.leads_today || 0;
-                    const c = item.closing_today || 0;
-                    const o = item.omzet_today || 0;
-                    const rate = l > 0 ? Math.round((c / l) * 100) : 0;
-
-                    totalLeadsMTD += l;
-                    totalClosingMTD += c;
-                    totalOmzetMTD += o;
-
-                    tableHtml += `
-                        <tr class="hover:bg-[#F5F0E6] transition duration-150">
-                            <td class="p-2.5 font-semibold">${item.tanggal}</td>
-                            <td class="p-2.5 text-center">${l}</td>
-                            <td class="p-2.5 text-center">${c}</td>
-                            <td class="p-2.5 text-center font-semibold text-[#5A7863]">${rate}%</td>
-                            <td class="p-2.5 text-right font-semibold text-[#B3704D]">${formatRupiah(o)}</td>
-                        </tr>
-                    `;
+                filterSelect.innerHTML = '';
+                monthKeys.forEach(mKey => {
+                    const opt = document.createElement('option');
+                    opt.value = mKey;
+                    opt.innerText = `Bulan ${mKey}`;
+                    if (mKey === data.active_month) opt.selected = true;
+                    filterSelect.appendChild(opt);
                 });
 
-                document.getElementById('historyTableBody').innerHTML = tableHtml;
-
-                const closingRateMTD = totalLeadsMTD > 0 ? Math.round((totalClosingMTD / totalLeadsMTD) * 100) : 0;
-
-                // Update UI Summary
-                document.getElementById('display_leads_today').innerText = l_today.toLocaleString('id-ID');
-                document.getElementById('display_closing_today').innerText = c_today.toLocaleString('id-ID');
-                document.getElementById('display_closing_rate').innerText = closingRateToday + '%';
-                document.getElementById('display_omzet_today').innerText = formatRupiah(o_today);
-
-                document.getElementById('display_total_leads_mtd').innerText = totalLeadsMTD.toLocaleString('id-ID');
-                document.getElementById('display_total_closing_mtd').innerText = totalClosingMTD.toLocaleString('id-ID');
-                document.getElementById('display_total_omzet_mtd').innerText = formatRupiah(totalOmzetMTD);
-                document.getElementById('display_closing_rate_mtd').innerText = closingRateMTD + '%';
-
-                // Render Chart Today
-                const ctxToday = document.getElementById('todayChart').getContext('2d');
-                todayChart = new Chart(ctxToday, {
-                    type: 'bar',
-                    data: {
-                        labels: ['LEADS TODAY', 'CLOSING TODAY'],
-                        datasets: [{
-                            data: [l_today, c_today],
-                            backgroundColor: ['#8C6D46', '#5A7863'],
-                            borderWidth: 0,
-                            borderRadius: 6
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: { legend: { display: false } },
-                        scales: {
-                            y: { beginAtZero: true, grid: { color: 'rgba(140, 122, 107, 0.1)' }, ticks: { color: '#78726A' } },
-                            x: { grid: { display: false }, ticks: { color: '#78726A' } }
-                        }
-                    }
+                filterSelect.addEventListener('change', (e) => {
+                    renderDashboard(e.target.value);
                 });
 
-                // Render Chart MTD
-                const ctxMtd = document.getElementById('mtdChart').getContext('2d');
-                mtdChart = new Chart(ctxMtd, {
-                    type: 'doughnut',
-                    data: {
-                        labels: ['TOTAL CLOSING', 'SISA LEADS (BELUM CLOSING)'],
-                        datasets: [{
-                            data: [totalClosingMTD, Math.max(0, totalLeadsMTD - totalClosingMTD)],
-                            backgroundColor: ['#6B5B7B', '#E3DCD0'],
-                            borderWidth: 0
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: { position: 'bottom', labels: { color: '#78726A', boxWidth: 12, font: { size: 11 } } }
-                        }
-                    }
-                });
+                const activeM = data.active_month || monthKeys[monthKeys.length - 1] || '10/2026';
+                renderDashboard(activeM);
             })
-            .catch(err => console.error("Gagal memuat data harian:", err));
+            .catch(err => console.error("Gagal memuat data:", err));
+
+        function renderDashboard(selectedMonth) {
+            const mData = (globalData.months && globalData.months[selectedMonth]) || { initial_baseline: { leads: 0, closing: 0, omzet: 0 }, history: [] };
+            const baseline = mData.initial_baseline || { leads: 0, closing: 0, omzet: 0 };
+            const history = mData.history || [];
+
+            if (todayChart) todayChart.destroy();
+            if (mtdChart) mtdChart.destroy();
+
+            if (history.length === 0) {
+                document.getElementById('display_tanggal').innerText = '-';
+                document.getElementById('display_leads_today').innerText = '0';
+                document.getElementById('display_closing_today').innerText = '0';
+                document.getElementById('display_closing_rate').innerText = '0%';
+                document.getElementById('display_omzet_today').innerText = 'Rp0';
+
+                document.getElementById('display_total_leads_mtd').innerText = (baseline.leads || 0).toLocaleString('id-ID');
+                document.getElementById('display_total_closing_mtd').innerText = (baseline.closing || 0).toLocaleString('id-ID');
+                document.getElementById('display_total_omzet_mtd').innerText = formatRupiah(baseline.omzet || 0);
+                
+                const baseRate = baseline.leads > 0 ? Math.round((baseline.closing / baseline.leads) * 100) : 0;
+                document.getElementById('display_closing_rate_mtd').innerText = baseRate + '%';
+                document.getElementById('historyTableBody').innerHTML = `<tr><td colspan="5" class="p-3 text-center text-[#78726A]">Belum ada riwayat di bulan ini.</td></tr>`;
+                return;
+            }
+
+            const latest = history[history.length - 1];
+            document.getElementById('display_tanggal').innerText = latest.tanggal || '-';
+
+            const l_today = latest.leads_today || 0;
+            const c_today = latest.closing_today || 0;
+            const o_today = latest.omzet_today || 0;
+            const closingRateToday = l_today > 0 ? Math.round((c_today / l_today) * 100) : 0;
+
+            let totalLeadsMTD = baseline.leads || 0;
+            let totalClosingMTD = baseline.closing || 0;
+            let totalOmzetMTD = baseline.omzet || 0;
+
+            let tableHtml = '';
+            history.forEach(item => {
+                const l = item.leads_today || 0;
+                const c = item.closing_today || 0;
+                const o = item.omzet_today || 0;
+                const rate = l > 0 ? Math.round((c / l) * 100) : 0;
+
+                totalLeadsMTD += l;
+                totalClosingMTD += c;
+                totalOmzetMTD += o;
+
+                tableHtml += `
+                    <tr class="hover:bg-[#F5F0E6] transition duration-150">
+                        <td class="p-2.5 font-semibold">${item.tanggal}</td>
+                        <td class="p-2.5 text-center">${l}</td>
+                        <td class="p-2.5 text-center">${c}</td>
+                        <td class="p-2.5 text-center font-semibold text-[#5A7863]">${rate}%</td>
+                        <td class="p-2.5 text-right font-semibold text-[#B3704D]">${formatRupiah(o)}</td>
+                    </tr>
+                `;
+            });
+
+            document.getElementById('historyTableBody').innerHTML = tableHtml;
+
+            const closingRateMTD = totalLeadsMTD > 0 ? Math.round((totalClosingMTD / totalLeadsMTD) * 100) : 0;
+
+            document.getElementById('display_leads_today').innerText = l_today.toLocaleString('id-ID');
+            document.getElementById('display_closing_today').innerText = c_today.toLocaleString('id-ID');
+            document.getElementById('display_closing_rate').innerText = closingRateToday + '%';
+            document.getElementById('display_omzet_today').innerText = formatRupiah(o_today);
+
+            document.getElementById('display_total_leads_mtd').innerText = totalLeadsMTD.toLocaleString('id-ID');
+            document.getElementById('display_total_closing_mtd').innerText = totalClosingMTD.toLocaleString('id-ID');
+            document.getElementById('display_total_omzet_mtd').innerText = formatRupiah(totalOmzetMTD);
+            document.getElementById('display_closing_rate_mtd').innerText = closingRateMTD + '%';
+
+            const ctxToday = document.getElementById('todayChart').getContext('2d');
+            todayChart = new Chart(ctxToday, {
+                type: 'bar',
+                data: {
+                    labels: ['LEADS TODAY', 'CLOSING TODAY'],
+                    datasets: [{
+                        data: [l_today, c_today],
+                        backgroundColor: ['#8C6D46', '#5A7863'],
+                        borderWidth: 0,
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: 'rgba(140, 122, 107, 0.1)' }, ticks: { color: '#78726A' } },
+                        x: { grid: { display: false }, ticks: { color: '#78726A' } }
+                    }
+                }
+            });
+
+            const ctxMtd = document.getElementById('mtdChart').getContext('2d');
+            mtdChart = new Chart(ctxMtd, {
+                type: 'doughnut',
+                data: {
+                    labels: ['TOTAL CLOSING', 'SISA LEADS (BELUM CLOSING)'],
+                    datasets: [{
+                        data: [totalClosingMTD, Math.max(0, totalLeadsMTD - totalClosingMTD)],
+                        backgroundColor: ['#6B5B7B', '#E3DCD0'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom', labels: { color: '#78726A', boxWidth: 12, font: { size: 11 } } }
+                    }
+                }
+            });
+        }
     </script>
 </body>
 </html>
