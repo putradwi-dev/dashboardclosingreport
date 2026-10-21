@@ -12,27 +12,25 @@
     </style>
 </head>
 <body class="bg-[#FBF9F1] text-[#33312E] min-h-screen p-4 md:p-8 flex items-center justify-center">
-    <div class="w-full max-w-2xl bg-[#F5F0E6] rounded-2xl shadow-lg border border-[#E3DCD0] overflow-hidden">
+    <div class="w-full max-w-2xl bg-[#F5F0E6] rounded-2xl shadow-lg border border-[#E3DCD0] overflow-hidden space-y-6 pb-6">
         <!-- Header -->
         <div class="bg-[#8C7A6B] p-6 text-center shadow-sm">
             <h1 class="text-xl md:text-2xl font-bold tracking-wide text-[#FAF7F2]">CLOSING REPORT E-COMMERCE TANGERANG</h1>
             <div class="mt-3 inline-flex items-center gap-2 bg-[#FAF7F2]/15 px-4 py-1.5 rounded-full text-sm font-medium backdrop-blur-sm text-[#F0EAE1]">
                 <span>👤 <span id="display_cs_name">MARVELL TANGERANG</span></span>
                 <span>•</span>
-                <span>📅 <span id="display_tanggal">19/10/2026</span></span>
+                <span>📅 <span id="display_tanggal">-</span></span>
             </div>
         </div>
 
         <!-- Content Body -->
-        <div class="p-6 space-y-6">
-            <!-- Grid Summary Cards -->
+        <div class="px-6 space-y-6">
+            <!-- Grid Summary Cards (Hari Ini) -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <!-- Leads Today -->
                 <div class="bg-[#FAF7F2] rounded-xl p-4 border border-[#E8E1D5] shadow-sm">
                     <h2 class="text-xs font-extrabold text-[#8C6D46] uppercase tracking-wider mb-1">LEADS TODAY</h2>
                     <div id="display_leads_today" class="text-2xl font-bold text-[#33312E]">0</div>
                 </div>
-                <!-- Closing Today -->
                 <div class="bg-[#FAF7F2] rounded-xl p-4 border border-[#E8E1D5] shadow-sm">
                     <h2 class="text-xs font-extrabold text-[#5A7863] uppercase tracking-wider mb-1">CLOSING TODAY</h2>
                     <div class="text-2xl font-bold text-[#5A7863]">
@@ -40,7 +38,6 @@
                         <span class="text-xs font-normal text-[#78726A]">(<span id="display_closing_rate">0%</span>)</span>
                     </div>
                 </div>
-                <!-- Omzet Today -->
                 <div class="bg-[#FAF7F2] rounded-xl p-4 border border-[#E8E1D5] shadow-sm">
                     <h2 class="text-xs font-extrabold text-[#B3704D] uppercase tracking-wider mb-1">OMZET TODAY</h2>
                     <div id="display_omzet_today" class="text-lg font-bold text-[#B3704D]">Rp0</div>
@@ -49,14 +46,12 @@
 
             <!-- Charts Section -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <!-- Chart 1: Daily Comparison -->
                 <div class="bg-[#FAF7F2] rounded-xl p-4 border border-[#E8E1D5] shadow-sm flex flex-col items-center">
                     <h2 class="text-xs font-extrabold text-[#8C6D46] uppercase tracking-wider mb-3 w-full text-left">PERFORMA HARIAN (TODAY)</h2>
                     <div class="w-full h-48 relative flex items-center justify-center">
                         <canvas id="todayChart"></canvas>
                     </div>
                 </div>
-                <!-- Chart 2: MTD Conversion Rate -->
                 <div class="bg-[#FAF7F2] rounded-xl p-4 border border-[#E8E1D5] shadow-sm flex flex-col items-center">
                     <h2 class="text-xs font-extrabold text-[#6B5B7B] uppercase tracking-wider mb-3 w-full text-left">MTD CONVERSION RATE</h2>
                     <div class="w-full h-48 relative flex items-center justify-center">
@@ -65,28 +60,47 @@
                 </div>
             </div>
 
-            <!-- MTD (Month To Date) Details Table/Box (Layout 2x2) -->
+            <!-- MTD Summary (2x2 Grid) -->
             <div class="bg-[#FAF7F2] rounded-xl p-4 border border-[#E8E1D5] shadow-sm space-y-3">
                 <h2 class="text-xs font-extrabold text-[#523F63] uppercase tracking-wider mb-3">MTD (MONTH TO DATE) SUMMARY</h2>
                 <div class="grid grid-cols-2 gap-4 text-center">
-                    <!-- Baris 1: TOTAL LEADS & TOTAL CLOSING -->
-                    <div class="bg-[#F5F0E6] p-4 rounded-lg border border-[#E3DCD0] shadow-2xs">
+                    <div class="bg-[#F5F0E6] p-4 rounded-lg border border-[#E3DCD0]">
                         <div class="text-xs font-bold text-[#33312E] uppercase">TOTAL LEADS</div>
                         <div id="display_total_leads_mtd" class="text-xl font-bold text-[#33312E] mt-1">0</div>
                     </div>
-                    <div class="bg-[#F5F0E6] p-4 rounded-lg border border-[#E3DCD0] shadow-2xs">
+                    <div class="bg-[#F5F0E6] p-4 rounded-lg border border-[#E3DCD0]">
                         <div class="text-xs font-bold text-[#33312E] uppercase">TOTAL CLOSING</div>
                         <div id="display_total_closing_mtd" class="text-xl font-bold text-[#33312E] mt-1">0</div>
                     </div>
-                    <!-- Baris 2: TOTAL OMZET & CLOSING RATE -->
-                    <div class="bg-[#F5F0E6] p-4 rounded-lg border border-[#E3DCD0] shadow-2xs">
+                    <div class="bg-[#F5F0E6] p-4 rounded-lg border border-[#E3DCD0]">
                         <div class="text-xs font-bold text-[#33312E] uppercase">TOTAL OMZET</div>
                         <div id="display_total_omzet_mtd" class="text-lg md:text-xl font-extrabold text-[#6B5B7B] mt-1">Rp0</div>
                     </div>
-                    <div class="bg-[#F5F0E6] p-4 rounded-lg border border-[#E3DCD0] shadow-2xs">
+                    <div class="bg-[#F5F0E6] p-4 rounded-lg border border-[#E3DCD0]">
                         <div class="text-xs font-bold text-[#33312E] uppercase">CLOSING RATE MTD</div>
                         <div id="display_closing_rate_mtd" class="text-xl font-bold text-[#6B5B7B] mt-1">0%</div>
                     </div>
+                </div>
+            </div>
+
+            <!-- TABEL RIWAYAT HARIAN -->
+            <div class="bg-[#FAF7F2] rounded-xl p-4 border border-[#E8E1D5] space-y-3">
+                <h2 class="text-xs font-extrabold text-[#8C6D46] uppercase tracking-wider mb-2">RIWAYAT LAPORAN HARIAN</h2>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-xs">
+                        <thead>
+                            <tr class="bg-[#EFEAE1] text-[#78726A] border-b border-[#E3DCD0]">
+                                <th class="p-2.5 font-bold">TANGGAL</th>
+                                <th class="p-2.5 font-bold text-center">LEADS</th>
+                                <th class="p-2.5 font-bold text-center">CLOSING</th>
+                                <th class="p-2.5 font-bold text-center">RATE</th>
+                                <th class="p-2.5 font-bold text-right">OMZET</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historyTableBody" class="divide-y divide-[#E3DCD0] text-[#33312E]">
+                            <!-- Data akan dimuat otomatis lewat script -->
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -98,7 +112,7 @@
         </div>
     </div>
 
-    <!-- Chart Scripts & Auto Calculation -->
+    <!-- Script Kalkulasi & Render Tabel / Grafik -->
     <script>
         let todayChart, mtdChart;
 
@@ -106,99 +120,112 @@
             return 'Rp' + number.toLocaleString('id-ID');
         }
 
-        function renderData(data) {
-            const l_prev = parseInt(data.leads_sebelumnya) || 0;
-            const c_prev = parseInt(data.closing_sebelumnya) || 0;
-            const o_prev = parseInt(data.omzet_sebelumnya) || 0;
-
-            const l_today = parseInt(data.leads_today) || 0;
-            const c_today = parseInt(data.closing_today) || 0;
-            const o_today = parseInt(data.omzet_today) || 0;
-
-            const closingRateToday = l_today > 0 ? Math.round((c_today / l_today) * 100) : 0;
-            const totalLeadsMTD = l_prev + l_today;
-            const totalClosingMTD = c_prev + c_today;
-            const totalOmzetMTD = o_prev + o_today;
-            const closingRateMTD = totalLeadsMTD > 0 ? Math.round((totalClosingMTD / totalLeadsMTD) * 100) : 0;
-
-            document.getElementById('display_cs_name').innerText = data.cs_name || 'MARVELL TANGERANG';
-            document.getElementById('display_tanggal').innerText = data.tanggal || '-';
-
-            document.getElementById('display_leads_today').innerText = l_today.toLocaleString('id-ID');
-            document.getElementById('display_closing_today').innerText = c_today.toLocaleString('id-ID');
-            document.getElementById('display_closing_rate').innerText = closingRateToday + '%';
-            document.getElementById('display_omzet_today').innerText = formatRupiah(o_today);
-
-            document.getElementById('display_total_leads_mtd').innerText = totalLeadsMTD.toLocaleString('id-ID');
-            document.getElementById('display_total_closing_mtd').innerText = totalClosingMTD.toLocaleString('id-ID');
-            document.getElementById('display_total_omzet_mtd').innerText = formatRupiah(totalOmzetMTD);
-            document.getElementById('display_closing_rate_mtd').innerText = closingRateMTD + '%';
-
-            // Chart Today
-            if (todayChart) todayChart.destroy();
-            const ctxToday = document.getElementById('todayChart').getContext('2d');
-            todayChart = new Chart(ctxToday, {
-                type: 'bar',
-                data: {
-                    labels: ['LEADS TODAY', 'CLOSING TODAY'],
-                    datasets: [{
-                        label: 'Jumlah',
-                        data: [l_today, c_today],
-                        backgroundColor: ['#8C6D46', '#5A7863'],
-                        borderWidth: 0,
-                        borderRadius: 6
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        y: { beginAtZero: true, grid: { color: 'rgba(140, 122, 107, 0.1)' }, ticks: { color: '#78726A' } },
-                        x: { grid: { display: false }, ticks: { color: '#78726A' } }
-                    }
-                }
-            });
-
-            // Chart MTD
-            if (mtdChart) mtdChart.destroy();
-            const ctxMtd = document.getElementById('mtdChart').getContext('2d');
-            mtdChart = new Chart(ctxMtd, {
-                type: 'doughnut',
-                data: {
-                    labels: ['TOTAL CLOSING', 'SISA LEADS (BELUM CLOSING)'],
-                    datasets: [{
-                        data: [totalClosingMTD, Math.max(0, totalLeadsMTD - totalClosingMTD)],
-                        backgroundColor: ['#6B5B7B', '#E3DCD0'],
-                        borderWidth: 0
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { position: 'bottom', labels: { color: '#78726A', boxWidth: 12, font: { size: 11 } } }
-                    }
-                }
-            });
-        }
-
-        // Ambil data dari data.json online (dengan fallback ke localStorage jika GitHub Pages masih proses building)
         fetch('data.json?v=' + Date.now())
-            .then(response => {
-                if (!response.ok) throw new Error('Network response was not ok');
-                return response.json();
-            })
+            .then(res => res.json())
             .then(data => {
-                renderData(data);
+                document.getElementById('display_cs_name').innerText = data.cs_name || 'MARVELL TANGERANG';
+
+                const history = data.history || [];
+                if (history.length === 0) return;
+
+                // Ambil data hari terakhir (paling akhir di dalam array history)
+                const latest = history[history.length - 1];
+                document.getElementById('display_tanggal').innerText = latest.tanggal || '-';
+
+                const l_today = latest.leads_today || 0;
+                const c_today = latest.closing_today || 0;
+                const o_today = latest.omzet_today || 0;
+
+                const closingRateToday = l_today > 0 ? Math.round((c_today / l_today) * 100) : 0;
+
+                // Hitung MTD dari akumulasi seluruh history
+                let totalLeadsMTD = 0;
+                let totalClosingMTD = 0;
+                let totalOmzetMTD = 0;
+
+                let tableHtml = '';
+                history.forEach(item => {
+                    const l = item.leads_today || 0;
+                    const c = item.closing_today || 0;
+                    const o = item.omzet_today || 0;
+                    const rate = l > 0 ? Math.round((c / l) * 100) : 0;
+
+                    totalLeadsMTD += l;
+                    totalClosingMTD += c;
+                    totalOmzetMTD += o;
+
+                    tableHtml += `
+                        <tr class="hover:bg-[#F5F0E6]">
+                            <td class="p-2.5 font-semibold">${item.tanggal}</td>
+                            <td class="p-2.5 text-center">${l}</td>
+                            <td class="p-2.5 text-center">${c}</td>
+                            <td class="p-2.5 text-center font-semibold text-[#5A7863]">${rate}%</td>
+                            <td class="p-2.5 text-right font-semibold text-[#B3704D]">${formatRupiah(o)}</td>
+                        </tr>
+                    `;
+                });
+
+                document.getElementById('historyTableBody').innerHTML = tableHtml;
+
+                const closingRateMTD = totalLeadsMTD > 0 ? Math.round((totalClosingMTD / totalLeadsMTD) * 100) : 0;
+
+                // Tampilkan ke kartu ringkasan
+                document.getElementById('display_leads_today').innerText = l_today.toLocaleString('id-ID');
+                document.getElementById('display_closing_today').innerText = c_today.toLocaleString('id-ID');
+                document.getElementById('display_closing_rate').innerText = closingRateToday + '%';
+                document.getElementById('display_omzet_today').innerText = formatRupiah(o_today);
+
+                document.getElementById('display_total_leads_mtd').innerText = totalLeadsMTD.toLocaleString('id-ID');
+                document.getElementById('display_total_closing_mtd').innerText = totalClosingMTD.toLocaleString('id-ID');
+                document.getElementById('display_total_omzet_mtd').innerText = formatRupiah(totalOmzetMTD);
+                document.getElementById('display_closing_rate_mtd').innerText = closingRateMTD + '%';
+
+                // Render Grafik Harian
+                const ctxToday = document.getElementById('todayChart').getContext('2d');
+                todayChart = new Chart(ctxToday, {
+                    type: 'bar',
+                    data: {
+                        labels: ['LEADS TODAY', 'CLOSING TODAY'],
+                        datasets: [{
+                            data: [l_today, c_today],
+                            backgroundColor: ['#8C6D46', '#5A7863'],
+                            borderWidth: 0,
+                            borderRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            y: { beginAtZero: true, grid: { color: 'rgba(140, 122, 107, 0.1)' }, ticks: { color: '#78726A' } },
+                            x: { grid: { display: false }, ticks: { color: '#78726A' } }
+                        }
+                    }
+                });
+
+                // Render Grafik MTD Doughnut
+                const ctxMtd = document.getElementById('mtdChart').getContext('2d');
+                mtdChart = new Chart(ctxMtd, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['TOTAL CLOSING', 'SISA LEADS (BELUM CLOSING)'],
+                        datasets: [{
+                            data: [totalClosingMTD, Math.max(0, totalLeadsMTD - totalClosingMTD)],
+                            backgroundColor: ['#6B5B7B', '#E3DCD0'],
+                            borderWidth: 0
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { position: 'bottom', labels: { color: '#78726A', boxWidth: 12, font: { size: 11 } } }
+                        }
+                    }
+                });
             })
-            .catch(err => {
-                console.warn("Menggunakan fallback localStorage karena fetch data.json tertunda:", err);
-                const localData = localStorage.getItem('reportData');
-                if (localData) {
-                    renderData(JSON.parse(localData));
-                }
-            });
+            .catch(err => console.error("Gagal memuat data harian:", err));
     </script>
 </body>
 </html>
