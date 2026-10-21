@@ -98,7 +98,6 @@
                             </tr>
                         </thead>
                         <tbody id="historyTableBody" class="divide-y divide-[#E3DCD0] text-[#33312E]">
-                            <!-- Data akan dimuat otomatis lewat script -->
                         </tbody>
                     </table>
                 </div>
@@ -112,7 +111,6 @@
         </div>
     </div>
 
-    <!-- Script Kalkulasi & Render Tabel / Grafik -->
     <script>
         let todayChart, mtdChart;
 
@@ -125,23 +123,23 @@
             .then(data => {
                 document.getElementById('display_cs_name').innerText = data.cs_name || 'MARVELL TANGERANG';
 
+                const baseline = data.initial_baseline || { leads: 0, closing: 0, omzet: 0 };
                 const history = data.history || [];
                 if (history.length === 0) return;
 
-                // Ambil data hari terakhir (paling akhir di dalam array history)
+                // Hari Terakhir
                 const latest = history[history.length - 1];
                 document.getElementById('display_tanggal').innerText = latest.tanggal || '-';
 
                 const l_today = latest.leads_today || 0;
                 const c_today = latest.closing_today || 0;
                 const o_today = latest.omzet_today || 0;
-
                 const closingRateToday = l_today > 0 ? Math.round((c_today / l_today) * 100) : 0;
 
-                // Hitung MTD dari akumulasi seluruh history
-                let totalLeadsMTD = 0;
-                let totalClosingMTD = 0;
-                let totalOmzetMTD = 0;
+                // Hitung Total MTD = Baseline + Semua History Harian
+                let totalLeadsMTD = baseline.leads || 0;
+                let totalClosingMTD = baseline.closing || 0;
+                let totalOmzetMTD = baseline.omzet || 0;
 
                 let tableHtml = '';
                 history.forEach(item => {
@@ -169,7 +167,7 @@
 
                 const closingRateMTD = totalLeadsMTD > 0 ? Math.round((totalClosingMTD / totalLeadsMTD) * 100) : 0;
 
-                // Tampilkan ke kartu ringkasan
+                // Update UI Summary
                 document.getElementById('display_leads_today').innerText = l_today.toLocaleString('id-ID');
                 document.getElementById('display_closing_today').innerText = c_today.toLocaleString('id-ID');
                 document.getElementById('display_closing_rate').innerText = closingRateToday + '%';
@@ -180,7 +178,7 @@
                 document.getElementById('display_total_omzet_mtd').innerText = formatRupiah(totalOmzetMTD);
                 document.getElementById('display_closing_rate_mtd').innerText = closingRateMTD + '%';
 
-                // Render Grafik Harian
+                // Render Chart Today
                 const ctxToday = document.getElementById('todayChart').getContext('2d');
                 todayChart = new Chart(ctxToday, {
                     type: 'bar',
@@ -204,7 +202,7 @@
                     }
                 });
 
-                // Render Grafik MTD Doughnut
+                // Render Chart MTD
                 const ctxMtd = document.getElementById('mtdChart').getContext('2d');
                 mtdChart = new Chart(ctxMtd, {
                     type: 'doughnut',
