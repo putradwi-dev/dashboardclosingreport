@@ -14,7 +14,7 @@
     <div class="w-full max-w-2xl bg-[#F5F0E6] rounded-2xl shadow-lg border border-[#E3DCD0] overflow-hidden">
         <!-- Header -->
         <div class="bg-[#8C7A6B] p-6 text-center shadow-sm">
-            <h1 class="text-xl md:text-2xl font-bold tracking-wide text-[#FAF7F2]">INPUT CLOSING REPORT</h1>
+            <h1 class="text-xl md:text-2xl font-bold tracking-wide text-[#FAF7F2]">INPUT CLOSING REPORT HARIAN</h1>
         </div>
 
         <!-- Form Body -->
@@ -29,32 +29,13 @@
                         <input type="text" id="cs_name" class="w-full bg-[#F5F0E6] border border-[#E3DCD0] rounded-lg p-2.5 text-sm font-semibold text-[#33312E] focus:outline-none focus:ring-2 focus:ring-[#8C7A6B]" required>
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-[#78726A] mb-1">TANGGAL</label>
+                        <label class="block text-xs font-bold text-[#78726A] mb-1">TANGGAL HARI INI (DD/MM/YYYY)</label>
                         <input type="text" id="tanggal" class="w-full bg-[#F5F0E6] border border-[#E3DCD0] rounded-lg p-2.5 text-sm font-semibold text-[#33312E] focus:outline-none focus:ring-2 focus:ring-[#8C7A6B]" required>
                     </div>
                 </div>
             </div>
 
-            <!-- Data Akumulasi Sebelumnya (Akumulasi MTD Lalu) -->
-            <div class="bg-[#FAF7F2] p-4 rounded-xl border border-[#E8E1D5] space-y-4">
-                <h2 class="text-xs font-extrabold text-[#6B5B7B] uppercase tracking-wider">DATA SEBELUMNYA</h2>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
-                        <label class="block text-xs font-bold text-[#78726A] mb-1">LEADS SEBELUMNYA</label>
-                        <input type="number" id="leads_sebelumnya" class="w-full bg-[#F5F0E6] border border-[#E3DCD0] rounded-lg p-2.5 text-sm font-semibold text-[#33312E] focus:outline-none focus:ring-2 focus:ring-[#6B5B7B]" required>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-[#78726A] mb-1">CLOSING SEBELUMNYA</label>
-                        <input type="number" id="closing_sebelumnya" class="w-full bg-[#F5F0E6] border border-[#E3DCD0] rounded-lg p-2.5 text-sm font-semibold text-[#33312E] focus:outline-none focus:ring-2 focus:ring-[#6B5B7B]" required>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-[#78726A] mb-1">OMZET SEBELUMNYA (Rp)</label>
-                        <input type="number" id="omzet_sebelumnya" class="w-full bg-[#F5F0E6] border border-[#E3DCD0] rounded-lg p-2.5 text-sm font-semibold text-[#33312E] focus:outline-none focus:ring-2 focus:ring-[#6B5B7B]" required>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Input Performa Hari Ini (Manual Input) -->
+            <!-- Input Performa Hari Ini -->
             <div class="bg-[#FAF7F2] p-4 rounded-xl border border-[#E8E1D5] space-y-4">
                 <h2 class="text-xs font-extrabold text-[#5A7863] uppercase tracking-wider">PERFORMA HARI INI (INPUT MANUAL)</h2>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -73,42 +54,15 @@
                 </div>
             </div>
 
-            <!-- Hasil Kalkulasi Otomatis Preview -->
-            <div class="bg-[#EFEAE1] p-4 rounded-xl border border-[#E3DCD0] space-y-3">
-                <h2 class="text-xs font-extrabold text-[#523F63] uppercase tracking-wider">PREVIEW KALKULASI RUMUS OTOMATIS</h2>
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-center">
-                    <div class="bg-white p-2.5 rounded-lg border border-[#E3DCD0]">
-                        <div class="text-[10px] font-bold text-[#78726A]">CLOSING RATE TODAY</div>
-                        <div id="calc_closing_rate" class="text-sm font-bold text-[#5A7863] mt-1">0%</div>
-                    </div>
-                    <div class="bg-white p-2.5 rounded-lg border border-[#E3DCD0]">
-                        <div class="text-[10px] font-bold text-[#78726A]">TOTAL LEADS MTD</div>
-                        <div id="calc_total_leads" class="text-sm font-bold text-[#33312E] mt-1">0</div>
-                    </div>
-                    <div class="bg-white p-2.5 rounded-lg border border-[#E3DCD0]">
-                        <div class="text-[10px] font-bold text-[#78726A]">TOTAL CLOSING MTD</div>
-                        <div id="calc_total_closing" class="text-sm font-bold text-[#33312E] mt-1">0</div>
-                    </div>
-                    <div class="bg-white p-2.5 rounded-lg border border-[#E3DCD0]">
-                        <div class="text-[10px] font-bold text-[#78726A]">CLOSING RATE MTD</div>
-                        <div id="calc_closing_rate_mtd" class="text-sm font-bold text-[#6B5B7B] mt-1">0%</div>
-                    </div>
-                </div>
-                <div class="bg-white p-2.5 rounded-lg border border-[#E3DCD0] text-center">
-                    <div class="text-[10px] font-bold text-[#78726A]">TOTAL OMZET MTD</div>
-                    <div id="calc_total_omzet" class="text-base font-extrabold text-[#6B5B7B] mt-0.5">Rp0</div>
-                </div>
-            </div>
-
-            <!-- OPSI UPDATE -->
+            <!-- Tombol Simpan & Update -->
             <div class="space-y-4 pt-2">
-                <!-- Opsi 1: Direct GitHub Commit API (Opsional) -->
                 <div class="bg-[#FAF7F2] p-4 rounded-xl border border-[#E8E1D5] space-y-3">
                     <button type="button" id="githubUpdateBtn" class="w-full bg-[#5A7863] hover:bg-[#496351] text-[#FAF7F2] font-bold py-3 px-4 rounded-xl shadow-md transition duration-200 text-sm flex items-center justify-center gap-2">
                         SIMPAN & UPDATE
                     </button>
-                    <p id="githubStatus" class="text-xs font-semibold text-center hidden"></p>
-                    <p class="text-[11px] text-[#78726A]">Masukkan GitHub Token Anda sekali saja. Saat tombol diklik, file <code>data.json</code> di GitHub Repository akan otomatis ter-update online sehingga orang lain langsung melihat data terbaru!</p>
+                    <p id="githubStatus" class="text-xs font-semibold text-center hidden py-1"></p>
+
+                    <p class="text-[11px] text-[#78726A] pt-1">Data hari ini akan otomatis ditambahkan ke dalam daftar riwayat harian dan memperbarui total MTD di web publik!</p>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                         <input type="text" id="gh_repo" placeholder="username/repository-name" class="bg-[#F5F0E6] border border-[#E3DCD0] rounded-lg p-2 text-xs font-semibold text-[#33312E]">
                         <input type="password" id="gh_token" placeholder="GitHub Personal Access Token (ghp_...)" class="bg-[#F5F0E6] border border-[#E3DCD0] rounded-lg p-2 text-xs font-semibold text-[#33312E]">
@@ -125,67 +79,19 @@
     </div>
 
     <script>
-        // Load data.json dari server (GitHub Pages)
+        let existingData = { cs_name: "MARVELL TANGERANG", history: [] };
+
         fetch('data.json?v=' + Date.now())
             .then(res => res.json())
             .then(data => {
-                document.getElementById('cs_name').value = data.cs_name || '';
-                document.getElementById('tanggal').value = data.tanggal || '';
-                document.getElementById('leads_sebelumnya').value = data.leads_sebelumnya || 0;
-                document.getElementById('closing_sebelumnya').value = data.closing_sebelumnya || 0;
-                document.getElementById('omzet_sebelumnya').value = data.omzet_sebelumnya || 0;
-                document.getElementById('leads_today').value = data.leads_today || 0;
-                document.getElementById('closing_today').value = data.closing_today || 0;
-                document.getElementById('omzet_today').value = data.omzet_today || 0;
-                calculatePreview();
+                existingData = data;
+                document.getElementById('cs_name').value = data.cs_name || 'MARVELL TANGERANG';
             })
-            .catch(() => calculatePreview());
+            .catch(err => console.log(err));
 
-        // Fill saved repo & token from localStorage if exists
         document.getElementById('gh_repo').value = localStorage.getItem('gh_repo') || '';
         document.getElementById('gh_token').value = localStorage.getItem('gh_token') || '';
 
-        const inputs = ['leads_sebelumnya', 'closing_sebelumnya', 'omzet_sebelumnya', 'leads_today', 'closing_today', 'omzet_today'];
-        inputs.forEach(id => {
-            document.getElementById(id).addEventListener('input', calculatePreview);
-        });
-
-        function calculatePreview() {
-            const l_prev = parseInt(document.getElementById('leads_sebelumnya').value) || 0;
-            const c_prev = parseInt(document.getElementById('closing_sebelumnya').value) || 0;
-            const o_prev = parseInt(document.getElementById('omzet_sebelumnya').value) || 0;
-
-            const l_today = parseInt(document.getElementById('leads_today').value) || 0;
-            const c_today = parseInt(document.getElementById('closing_today').value) || 0;
-            const o_today = parseInt(document.getElementById('omzet_today').value) || 0;
-
-            const closingRateToday = l_today > 0 ? Math.round((c_today / l_today) * 100) : 0;
-            const totalLeadsMTD = l_prev + l_today;
-            const totalClosingMTD = c_prev + c_today;
-            const totalOmzetMTD = o_prev + o_today;
-            const closingRateMTD = totalLeadsMTD > 0 ? Math.round((totalClosingMTD / totalLeadsMTD) * 100) : 0;
-
-            document.getElementById('calc_closing_rate').innerText = closingRateToday + '%';
-            document.getElementById('calc_total_leads').innerText = totalLeadsMTD.toLocaleString('id-ID');
-            document.getElementById('calc_total_closing').innerText = totalClosingMTD.toLocaleString('id-ID');
-            document.getElementById('calc_closing_rate_mtd').innerText = closingRateMTD + '%';
-            document.getElementById('calc_total_omzet').innerText = 'Rp' + totalOmzetMTD.toLocaleString('id-ID');
-        }
-
-        function getPayload() {
-            return {
-                cs_name: document.getElementById('cs_name').value,
-                tanggal: document.getElementById('tanggal').value,
-                leads_sebelumnya: parseInt(document.getElementById('leads_sebelumnya').value) || 0,
-                closing_sebelumnya: parseInt(document.getElementById('closing_sebelumnya').value) || 0,
-                omzet_sebelumnya: parseInt(document.getElementById('omzet_sebelumnya').value) || 0,
-                leads_today: parseInt(document.getElementById('leads_today').value) || 0,
-                closing_today: parseInt(document.getElementById('closing_today').value) || 0,
-                omzet_today: parseInt(document.getElementById('omzet_today').value) || 0
-            };
-        }
-
-        // Direct GitHub API Update
         document.getElementById('githubUpdateBtn').addEventListener('click', async () => {
             const repo = document.getElementById('gh_repo').value.trim();
             const token = document.getElementById('gh_token').value.trim();
@@ -199,14 +105,34 @@
             localStorage.setItem('gh_repo', repo);
             localStorage.setItem('gh_token', token);
 
+            const newEntry = {
+                tanggal: document.getElementById('tanggal').value,
+                leads_today: parseInt(document.getElementById('leads_today').value) || 0,
+                closing_today: parseInt(document.getElementById('closing_today').value) || 0,
+                omzet_today: parseInt(document.getElementById('omzet_today').value) || 0
+            };
+
+            if (!newEntry.tanggal) {
+                alert("Tanggal harus diisi!");
+                return;
+            }
+
+            // Cek apakah tanggal yang sama sudah ada di history, jika ada update, jika belum tambahkan ke history
+            const existingIndex = existingData.history.findIndex(h => h.tanggal === newEntry.tanggal);
+            if (existingIndex >= 0) {
+                existingData.history[existingIndex] = newEntry;
+            } else {
+                existingData.history.push(newEntry);
+            }
+
+            existingData.cs_name = document.getElementById('cs_name').value;
+
             statusEl.classList.remove('hidden', 'text-emerald-700', 'text-rose-600');
             statusEl.classList.add('text-[#8C7A6B]');
             statusEl.innerText = "Sedang memperbarui data...";
 
             try {
                 const url = `https://api.github.com/repos/${repo}/contents/data.json`;
-                
-                // 1. Get current SHA of data.json
                 let sha = "";
                 const getRes = await fetch(url, {
                     headers: { 'Authorization': `token ${token}` }
@@ -216,8 +142,7 @@
                     sha = getData.sha;
                 }
 
-                // 2. Commit updated data.json
-                const contentEncoded = btoa(unescape(encodeURIComponent(JSON.stringify(getPayload(), null, 4))));
+                const contentEncoded = btoa(unescape(encodeURIComponent(JSON.stringify(existingData, null, 4))));
                 const putRes = await fetch(url, {
                     method: 'PUT',
                     headers: {
@@ -225,34 +150,23 @@
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        message: `Update report data (${new Date().toLocaleString('id-ID')})`,
+                        message: `Update harian report (${new Date().toLocaleString('id-ID')})`,
                         content: contentEncoded,
                         sha: sha || undefined
                     })
                 });
 
                 if (putRes.ok) {
-                    statusEl.className = "text-xs font-semibold text-center text-emerald-700";
+                    statusEl.className = "text-xs font-semibold text-center text-emerald-700 py-1";
                     statusEl.innerText = "BERHASIL SIMPAN & UPDATE.";
                 } else {
                     const errData = await putRes.json();
                     throw new Error(errData.message || "Gagal meng-update file di GitHub.");
                 }
             } catch (err) {
-                statusEl.className = "text-xs font-semibold text-center text-rose-600";
+                statusEl.className = "text-xs font-semibold text-center text-rose-600 py-1";
                 statusEl.innerText = "❌ Terjadi Kesalahan: " + err.message;
             }
-        });
-
-        // Manual Download Fallback
-        document.getElementById('downloadJsonBtn').addEventListener('click', () => {
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(getPayload(), null, 4));
-            const downloadAnchor = document.createElement('a');
-            downloadAnchor.setAttribute("href", dataStr);
-            downloadAnchor.setAttribute("download", "data.json");
-            document.body.appendChild(downloadAnchor);
-            downloadAnchor.click();
-            downloadAnchor.remove();
         });
     </script>
 </body>
