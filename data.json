@@ -6,6 +6,12 @@
             "leads_today": 35,
             "closing_today": 20,
             "omzet_today": 55024652
+        },
+        {
+            "tanggal": "21/10/2026",
+            "leads_today": 42,
+            "closing_today": 12,
+            "omzet_today": 83394660
         }
     ]
 }
