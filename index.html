@@ -83,13 +83,15 @@
                 </div>
             </div>
 
-            <!-- TABEL RIWAYAT HARIAN -->
+            <!-- TABEL RIWAYAT HARIAN (DENGAN MAKSIMAL 5 BARIS & SCROLL OTOMATIS) -->
             <div class="bg-[#FAF7F2] rounded-xl p-4 border border-[#E8E1D5] space-y-3">
                 <h2 class="text-xs font-extrabold text-[#8C6D46] uppercase tracking-wider mb-2">RIWAYAT LAPORAN HARIAN</h2>
-                <div class="overflow-x-auto">
+                <!-- Container dengan batas tinggi (max-h-56) & scroll vertical (overflow-y-auto) -->
+                <div class="overflow-x-auto overflow-y-auto max-h-[220px] rounded-lg border border-[#E3DCD0]">
                     <table class="w-full text-left border-collapse text-xs">
-                        <thead>
-                            <tr class="bg-[#EFEAE1] text-[#78726A] border-b border-[#E3DCD0]">
+                        <!-- Sticky header agar judul kolom tidak ikut ter-scroll -->
+                        <thead class="sticky top-0 bg-[#EFEAE1] text-[#78726A] shadow-xs z-10">
+                            <tr class="border-b border-[#E3DCD0]">
                                 <th class="p-2.5 font-bold">TANGGAL</th>
                                 <th class="p-2.5 font-bold text-center">LEADS</th>
                                 <th class="p-2.5 font-bold text-center">CLOSING</th>
@@ -97,7 +99,7 @@
                                 <th class="p-2.5 font-bold text-right">OMZET</th>
                             </tr>
                         </thead>
-                        <tbody id="historyTableBody" class="divide-y divide-[#E3DCD0] text-[#33312E]">
+                        <tbody id="historyTableBody" class="divide-y divide-[#E3DCD0] text-[#33312E] bg-white">
                         </tbody>
                     </table>
                 </div>
@@ -153,7 +155,7 @@
                     totalOmzetMTD += o;
 
                     tableHtml += `
-                        <tr class="hover:bg-[#F5F0E6]">
+                        <tr class="hover:bg-[#F5F0E6] transition duration-150">
                             <td class="p-2.5 font-semibold">${item.tanggal}</td>
                             <td class="p-2.5 text-center">${l}</td>
                             <td class="p-2.5 text-center">${c}</td>
