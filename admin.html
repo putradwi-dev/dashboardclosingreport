@@ -35,6 +35,28 @@
                 </div>
             </div>
 
+            <!-- ACUAN DATA AWAL (BASELINE) -->
+            <div class="bg-[#FAF7F2] p-4 rounded-xl border border-[#E8E1D5] space-y-3">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-xs font-extrabold text-[#6B5B7B] uppercase tracking-wider">DATA ACUAN AWAL (BASELINE S.D. HARI KEMARIN)</h2>
+                    <span class="text-[10px] bg-[#EFEAE1] px-2 py-0.5 rounded text-[#78726A] font-semibold">Otomatis Terakumulasi</span>
+                </div>
+                <div class="grid grid-cols-3 gap-3 text-center">
+                    <div class="bg-[#F5F0E6] p-2.5 rounded-lg border border-[#E3DCD0]">
+                        <div class="text-[10px] font-bold text-[#78726A]">LEADS SEBELUMNYA</div>
+                        <div id="disp_prev_leads" class="text-sm font-bold text-[#33312E] mt-0.5">735</div>
+                    </div>
+                    <div class="bg-[#F5F0E6] p-2.5 rounded-lg border border-[#E3DCD0]">
+                        <div class="text-[10px] font-bold text-[#78726A]">CLOSING SEBELUMNYA</div>
+                        <div id="disp_prev_closing" class="text-sm font-bold text-[#33312E] mt-0.5">335</div>
+                    </div>
+                    <div class="bg-[#F5F0E6] p-2.5 rounded-lg border border-[#E3DCD0]">
+                        <div class="text-[10px] font-bold text-[#78726A]">OMZET SEBELUMNYA</div>
+                        <div id="disp_prev_omzet" class="text-xs md:text-sm font-bold text-[#6B5B7B] mt-0.5">Rp1.120.680.586</div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Input Performa Hari Ini -->
             <div class="bg-[#FAF7F2] p-4 rounded-xl border border-[#E8E1D5] space-y-4">
                 <h2 class="text-xs font-extrabold text-[#5A7863] uppercase tracking-wider">PERFORMA HARI INI (INPUT MANUAL)</h2>
@@ -51,6 +73,33 @@
                         <label class="block text-xs font-bold text-[#78726A] mb-1">OMZET TODAY (Rp)</label>
                         <input type="number" id="omzet_today" class="w-full bg-[#F5F0E6] border border-[#E3DCD0] rounded-lg p-2.5 text-sm font-semibold text-[#33312E] focus:outline-none focus:ring-2 focus:ring-[#5A7863]" required>
                     </div>
+                </div>
+            </div>
+
+            <!-- Hasil Kalkulasi Otomatis Preview -->
+            <div class="bg-[#EFEAE1] p-4 rounded-xl border border-[#E3DCD0] space-y-3">
+                <h2 class="text-xs font-extrabold text-[#523F63] uppercase tracking-wider">PREVIEW TOTAL AKUMULASI MTD BARU</h2>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-center">
+                    <div class="bg-white p-2.5 rounded-lg border border-[#E3DCD0]">
+                        <div class="text-[10px] font-bold text-[#78726A]">CLOSING RATE TODAY</div>
+                        <div id="calc_closing_rate" class="text-sm font-bold text-[#5A7863] mt-1">0%</div>
+                    </div>
+                    <div class="bg-white p-2.5 rounded-lg border border-[#E3DCD0]">
+                        <div class="text-[10px] font-bold text-[#78726A]">TOTAL LEADS MTD</div>
+                        <div id="calc_total_leads" class="text-sm font-bold text-[#33312E] mt-1">0</div>
+                    </div>
+                    <div class="bg-white p-2.5 rounded-lg border border-[#E3DCD0]">
+                        <div class="text-[10px] font-bold text-[#78726A]">TOTAL CLOSING MTD</div>
+                        <div id="calc_total_closing" class="text-sm font-bold text-[#33312E] mt-1">0</div>
+                    </div>
+                    <div class="bg-white p-2.5 rounded-lg border border-[#E3DCD0]">
+                        <div class="text-[10px] font-bold text-[#78726A]">CLOSING RATE MTD</div>
+                        <div id="calc_closing_rate_mtd" class="text-sm font-bold text-[#6B5B7B] mt-1">0%</div>
+                    </div>
+                </div>
+                <div class="bg-white p-2.5 rounded-lg border border-[#E3DCD0] text-center">
+                    <div class="text-[10px] font-bold text-[#78726A]">TOTAL OMZET MTD</div>
+                    <div id="calc_total_omzet" class="text-base font-extrabold text-[#6B5B7B] mt-0.5">Rp0</div>
                 </div>
             </div>
 
@@ -79,18 +128,80 @@
     </div>
 
     <script>
-        let existingData = { cs_name: "MARVELL TANGERANG", history: [] };
+        let existingData = { 
+            cs_name: "MARVELL TANGERANG", 
+            initial_baseline: { leads: 735, closing: 335, omzet: 1120680586 },
+            history: [] 
+        };
+        
+        let baselineLeads = 735, baselineClosing = 335, baselineOmzet = 1120680586;
+
+        function formatRupiah(num) {
+            return 'Rp' + num.toLocaleString('id-ID');
+        }
 
         fetch('data.json?v=' + Date.now())
             .then(res => res.json())
             .then(data => {
                 existingData = data;
                 document.getElementById('cs_name').value = data.cs_name || 'MARVELL TANGERANG';
+
+                if (data.initial_baseline) {
+                    baselineLeads = data.initial_baseline.leads || 735;
+                    baselineClosing = data.initial_baseline.closing || 335;
+                    baselineOmzet = data.initial_baseline.omzet || 1120680586;
+                }
+
+                // Hitung kumulatif riwayat sebelumnya
+                let cumLeads = baselineLeads;
+                let cumClosing = baselineClosing;
+                let cumOmzet = baselineOmzet;
+
+                if (data.history && data.history.length > 0) {
+                    data.history.forEach(item => {
+                        cumLeads += parseInt(item.leads_today) || 0;
+                        cumClosing += parseInt(item.closing_today) || 0;
+                        cumOmzet += parseInt(item.omzet_today) || 0;
+                    });
+                }
+
+                document.getElementById('disp_prev_leads').innerText = cumLeads.toLocaleString('id-ID');
+                document.getElementById('disp_prev_closing').innerText = cumClosing.toLocaleString('id-ID');
+                document.getElementById('disp_prev_omzet').innerText = formatRupiah(cumOmzet);
+
+                calculatePreview(cumLeads, cumClosing, cumOmzet);
             })
-            .catch(err => console.log(err));
+            .catch(err => calculatePreview(baselineLeads, baselineClosing, baselineOmzet));
 
         document.getElementById('gh_repo').value = localStorage.getItem('gh_repo') || '';
         document.getElementById('gh_token').value = localStorage.getItem('gh_token') || '';
+
+        ['leads_today', 'closing_today', 'omzet_today'].forEach(id => {
+            document.getElementById(id).addEventListener('input', () => {
+                let cumL = parseInt(document.getElementById('disp_prev_leads').innerText.replace(/\./g, '')) || baselineLeads;
+                let cumC = parseInt(document.getElementById('disp_prev_closing').innerText.replace(/\./g, '')) || baselineClosing;
+                let cumO = parseInt(document.getElementById('disp_prev_omzet').innerText.replace(/[^\d]/g, '')) || baselineOmzet;
+                calculatePreview(cumL, cumC, cumO);
+            });
+        });
+
+        function calculatePreview(prevL, prevC, prevO) {
+            const l_today = parseInt(document.getElementById('leads_today').value) || 0;
+            const c_today = parseInt(document.getElementById('closing_today').value) || 0;
+            const o_today = parseInt(document.getElementById('omzet_today').value) || 0;
+
+            const closingRateToday = l_today > 0 ? Math.round((c_today / l_today) * 100) : 0;
+            const totalLeadsMTD = prevL + l_today;
+            const totalClosingMTD = prevC + c_today;
+            const totalOmzetMTD = prevO + o_today;
+            const closingRateMTD = totalLeadsMTD > 0 ? Math.round((totalClosingMTD / totalLeadsMTD) * 100) : 0;
+
+            document.getElementById('calc_closing_rate').innerText = closingRateToday + '%';
+            document.getElementById('calc_total_leads').innerText = totalLeadsMTD.toLocaleString('id-ID');
+            document.getElementById('calc_total_closing').innerText = totalClosingMTD.toLocaleString('id-ID');
+            document.getElementById('calc_closing_rate_mtd').innerText = closingRateMTD + '%';
+            document.getElementById('calc_total_omzet').innerText = formatRupiah(totalOmzetMTD);
+        }
 
         document.getElementById('githubUpdateBtn').addEventListener('click', async () => {
             const repo = document.getElementById('gh_repo').value.trim();
@@ -117,7 +228,7 @@
                 return;
             }
 
-            // Cek apakah tanggal yang sama sudah ada di history, jika ada update, jika belum tambahkan ke history
+            if (!existingData.history) existingData.history = [];
             const existingIndex = existingData.history.findIndex(h => h.tanggal === newEntry.tanggal);
             if (existingIndex >= 0) {
                 existingData.history[existingIndex] = newEntry;
