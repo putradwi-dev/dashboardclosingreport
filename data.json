@@ -1,5 +1,10 @@
 {
     "cs_name": "MARVELL TANGERANG",
+    "initial_baseline": {
+        "leads": 735,
+        "closing": 335,
+        "omzet": 1120680586
+    },
     "history": [
         {
             "tanggal": "20/10/2026",
