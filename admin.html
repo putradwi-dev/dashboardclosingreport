@@ -11,14 +11,14 @@
     </style>
 </head>
 <body class="bg-[#FBF9F1] text-[#33312E] min-h-screen p-4 md:p-8 flex items-center justify-center">
-    <div class="w-full max-w-2xl bg-[#F5F0E6] rounded-2xl shadow-lg border border-[#E3DCD0] overflow-hidden">
+    <div class="w-full max-w-2xl bg-[#F5F0E6] rounded-2xl shadow-lg border border-[#E3DCD0] overflow-hidden space-y-6">
         <!-- Header -->
         <div class="bg-[#8C7A6B] p-6 text-center shadow-sm">
             <h1 class="text-xl md:text-2xl font-bold tracking-wide text-[#FAF7F2]">INPUT CLOSING REPORT HARIAN</h1>
         </div>
 
         <!-- Form Body -->
-        <form id="reportForm" class="p-6 space-y-6">
+        <form id="reportForm" class="px-6 space-y-6">
             
             <!-- Informasi Umum -->
             <div class="bg-[#FAF7F2] p-4 rounded-xl border border-[#E8E1D5] space-y-4">
@@ -120,6 +120,29 @@
             </div>
         </form>
 
+        <!-- KELOLA RIWAYAT DATA (EDIT & HAPUS) -->
+        <div class="px-6 pb-6">
+            <div class="bg-[#FAF7F2] p-4 rounded-xl border border-[#E8E1D5] space-y-3">
+                <h2 class="text-xs font-extrabold text-[#8C6D46] uppercase tracking-wider mb-2">KELOLA RIWAYAT HARIAN (EDIT / HAPUS)</h2>
+                <div class="overflow-x-auto rounded-lg border border-[#E3DCD0]">
+                    <table class="w-full text-left border-collapse text-xs">
+                        <thead class="bg-[#EFEAE1] text-[#78726A]">
+                            <tr class="border-b border-[#E3DCD0]">
+                                <th class="p-2 font-bold">TANGGAL</th>
+                                <th class="p-2 font-bold text-center">LEADS</th>
+                                <th class="p-2 font-bold text-center">CLOSING</th>
+                                <th class="p-2 font-bold text-right">OMZET</th>
+                                <th class="p-2 font-bold text-center">AKSI</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminHistoryTable" class="divide-y divide-[#E3DCD0] text-[#33312E] bg-white">
+                            <!-- Data Riwayat dimasukkan via Script -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
         <!-- Footer -->
         <div class="bg-[#EFEAE1] px-6 py-4 text-center border-t border-[#E3DCD0] space-y-1">
             <div class="text-xs text-[#8A8379] font-medium">ADMIN PANEL E-COMMERCE TANGERANG &copy; 2026</div>
@@ -145,6 +168,7 @@
             .then(data => {
                 existingData = data;
                 document.getElementById('cs_name').value = data.cs_name || 'MARVELL TANGERANG';
+                renderAdminHistoryTable();
                 recalculateBaseline();
             })
             .catch(() => recalculateBaseline());
@@ -152,11 +176,72 @@
         document.getElementById('gh_repo').value = localStorage.getItem('gh_repo') || '';
         document.getElementById('gh_token').value = localStorage.getItem('gh_token') || '';
 
-        // Hitung ulang acuan data sebelumnya berdasarkan tanggal yang diketik di input "TANGGAL"
         document.getElementById('tanggal').addEventListener('input', recalculateBaseline);
         ['leads_today', 'closing_today', 'omzet_today'].forEach(id => {
             document.getElementById(id).addEventListener('input', calculatePreview);
         });
+
+        // Render Tabel Riwayat di Halaman Admin
+        function renderAdminHistoryTable() {
+            const tbody = document.getElementById('adminHistoryTable');
+            const history = existingData.history || [];
+
+            if (history.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="p-3 text-center text-[#78726A] font-medium">Belum ada riwayat data tersimpan.</td></tr>`;
+                return;
+            }
+
+            let html = '';
+            history.forEach((item, index) => {
+                html += `
+                    <tr class="hover:bg-[#F5F0E6]">
+                        <td class="p-2 font-semibold">${item.tanggal}</td>
+                        <td class="p-2 text-center">${item.leads_today}</td>
+                        <td class="p-2 text-center">${item.closing_today}</td>
+                        <td class="p-2 text-right font-semibold text-[#B3704D]">${formatRupiah(item.omzet_today)}</td>
+                        <td class="p-2 text-center space-x-1">
+                            <button type="button" onclick="editEntry(${index})" class="bg-[#8C6D46] hover:bg-[#735938] text-white px-2 py-1 rounded text-[10px] font-bold transition">✏️ Edit</button>
+                            <button type="button" onclick="deleteEntry(${index})" class="bg-rose-600 hover:bg-rose-700 text-white px-2 py-1 rounded text-[10px] font-bold transition">🗑️ Hapus</button>
+                        </td>
+                    </tr>
+                `;
+            });
+            tbody.innerHTML = html;
+        }
+
+        // Fungsi Edit Data
+        window.editEntry = function(index) {
+            const item = existingData.history[index];
+            if (!item) return;
+
+            document.getElementById('tanggal').value = item.tanggal;
+            document.getElementById('leads_today').value = item.leads_today;
+            document.getElementById('closing_today').value = item.closing_today;
+            document.getElementById('omzet_today').value = item.omzet_today;
+
+            recalculateBaseline();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+
+        // Fungsi Hapus Data
+        window.deleteEntry = async function(index) {
+            const item = existingData.history[index];
+            if (!confirm(`Apakah Anda yakin ingin menghapus data tanggal ${item.tanggal}?`)) return;
+
+            existingData.history.splice(index, 1);
+            renderAdminHistoryTable();
+            recalculateBaseline();
+
+            // Otomatis Simpan Perubahan Hapus ke GitHub
+            const repo = document.getElementById('gh_repo').value.trim();
+            const token = document.getElementById('gh_token').value.trim();
+
+            if (repo && token) {
+                await updateGitHubData("Menghapus entri tanggal " + item.tanggal);
+            } else {
+                alert("Data berhasil dihapus di lokal form, tapi jangan lupa isi GitHub Repo/Token lalu klik SIMPAN & UPDATE agar terupdate secara online!");
+            }
+        };
 
         function recalculateBaseline() {
             const inputDate = document.getElementById('tanggal').value.trim();
@@ -166,12 +251,9 @@
             let cumC = base.closing || 335;
             let cumO = base.omzet || 1120680586;
 
-            // Jika ada riwayat harian, sertakan HANYA tanggal yang berada SEBELUM tanggal yang diinputkan
             if (existingData.history && existingData.history.length > 0) {
                 existingData.history.forEach(item => {
-                    // Hanya tambahkan riwayat harian jika tanggalnya TIDAK SAMA dengan tanggal input saat ini
                     if (inputDate && item.tanggal !== inputDate) {
-                        // Jika urutan tanggal sebelum tanggal input saat ini (atau jika input tanggal belum diisi penuh)
                         if (item.tanggal < inputDate) {
                             cumL += parseInt(item.leads_today) || 0;
                             cumC += parseInt(item.closing_today) || 0;
@@ -210,7 +292,7 @@
             document.getElementById('calc_total_omzet').innerText = formatRupiah(totalOmzetMTD);
         }
 
-        document.getElementById('githubUpdateBtn').addEventListener('click', async () => {
+        async function updateGitHubData(commitMsg) {
             const repo = document.getElementById('gh_repo').value.trim();
             const token = document.getElementById('gh_token').value.trim();
             const statusEl = document.getElementById('githubStatus');
@@ -223,6 +305,50 @@
             localStorage.setItem('gh_repo', repo);
             localStorage.setItem('gh_token', token);
 
+            statusEl.classList.remove('hidden', 'text-emerald-700', 'text-rose-600');
+            statusEl.classList.add('text-[#8C7A6B]');
+            statusEl.innerText = "Sedang memperbarui data ke GitHub...";
+
+            try {
+                const url = `https://api.github.com/repos/${repo}/contents/data.json`;
+                let sha = "";
+                const getRes = await fetch(url, {
+                    headers: { 'Authorization': `token ${token}` }
+                });
+                if (getRes.ok) {
+                    const getData = await getRes.json();
+                    sha = getData.sha;
+                }
+
+                const contentEncoded = btoa(unescape(encodeURIComponent(JSON.stringify(existingData, null, 4))));
+                const putRes = await fetch(url, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `token ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: commitMsg,
+                        content: contentEncoded,
+                        sha: sha || undefined
+                    })
+                });
+
+                if (putRes.ok) {
+                    statusEl.className = "text-xs font-semibold text-center text-emerald-700 py-1";
+                    statusEl.innerText = "BERHASIL SIMPAN & UPDATE BERHASIL.";
+                    renderAdminHistoryTable();
+                } else {
+                    const errData = await putRes.json();
+                    throw new Error(errData.message || "Gagal meng-update file di GitHub.");
+                }
+            } catch (err) {
+                statusEl.className = "text-xs font-semibold text-center text-rose-600 py-1";
+                statusEl.innerText = "❌ Terjadi Kesalahan: " + err.message;
+            }
+        }
+
+        document.getElementById('githubUpdateBtn').addEventListener('click', async () => {
             const newEntry = {
                 tanggal: document.getElementById('tanggal').value.trim(),
                 leads_today: parseInt(document.getElementById('leads_today').value) || 0,
@@ -245,46 +371,7 @@
 
             existingData.cs_name = document.getElementById('cs_name').value;
 
-            statusEl.classList.remove('hidden', 'text-emerald-700', 'text-rose-600');
-            statusEl.classList.add('text-[#8C7A6B]');
-            statusEl.innerText = "Sedang memperbarui data...";
-
-            try {
-                const url = `https://api.github.com/repos/${repo}/contents/data.json`;
-                let sha = "";
-                const getRes = await fetch(url, {
-                    headers: { 'Authorization': `token ${token}` }
-                });
-                if (getRes.ok) {
-                    const getData = await getRes.json();
-                    sha = getData.sha;
-                }
-
-                const contentEncoded = btoa(unescape(encodeURIComponent(JSON.stringify(existingData, null, 4))));
-                const putRes = await fetch(url, {
-                    method: 'PUT',
-                    headers: {
-                        'Authorization': `token ${token}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        message: `Update harian report (${new Date().toLocaleString('id-ID')})`,
-                        content: contentEncoded,
-                        sha: sha || undefined
-                    })
-                });
-
-                if (putRes.ok) {
-                    statusEl.className = "text-xs font-semibold text-center text-emerald-700 py-1";
-                    statusEl.innerText = "BERHASIL SIMPAN & UPDATE.";
-                } else {
-                    const errData = await putRes.json();
-                    throw new Error(errData.message || "Gagal meng-update file di GitHub.");
-                }
-            } catch (err) {
-                statusEl.className = "text-xs font-semibold text-center text-rose-600 py-1";
-                statusEl.innerText = "❌ Terjadi Kesalahan: " + err.message;
-            }
+            await updateGitHubData(`Update harian report tanggal ${newEntry.tanggal}`);
         });
     </script>
 </body>
