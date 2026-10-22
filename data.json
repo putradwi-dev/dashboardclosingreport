@@ -20,8 +20,62 @@
                     "leads_today": 42,
                     "closing_today": 12,
                     "omzet_today": 83394660
+                },
+                {
+                    "tanggal": "22/10/2026",
+                    "leads_today": 51,
+                    "closing_today": 16,
+                    "omzet_today": 87057980
                 }
             ]
+        },
+        "10/": {
+            "initial_baseline": {
+                "leads": 0,
+                "closing": 0,
+                "omzet": 0
+            },
+            "history": []
+        },
+        "10/0": {
+            "initial_baseline": {
+                "leads": 0,
+                "closing": 0,
+                "omzet": 0
+            },
+            "history": []
+        },
+        "10/02": {
+            "initial_baseline": {
+                "leads": 0,
+                "closing": 0,
+                "omzet": 0
+            },
+            "history": []
+        },
+        "10/2": {
+            "initial_baseline": {
+                "leads": 0,
+                "closing": 0,
+                "omzet": 0
+            },
+            "history": []
+        },
+        "10/20": {
+            "initial_baseline": {
+                "leads": 0,
+                "closing": 0,
+                "omzet": 0
+            },
+            "history": []
+        },
+        "10/202": {
+            "initial_baseline": {
+                "leads": 0,
+                "closing": 0,
+                "omzet": 0
+            },
+            "history": []
         }
     }
 }
