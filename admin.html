@@ -30,7 +30,7 @@
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-[#78726A] mb-1">TANGGAL HARI INI (DD/MM/YYYY)</label>
-                        <input type="text" id="tanggal" placeholder="20/10/2026" class="w-full bg-[#F5F0E6] border border-[#E3DCD0] rounded-lg p-2.5 text-sm font-semibold text-[#33312E] focus:outline-none focus:ring-2 focus:ring-[#8C7A6B]" required>
+                        <input type="text" id="tanggal" placeholder="22/10/2026" class="w-full bg-[#F5F0E6] border border-[#E3DCD0] rounded-lg p-2.5 text-sm font-semibold text-[#33312E] focus:outline-none focus:ring-2 focus:ring-[#8C7A6B]" required>
                     </div>
                 </div>
             </div>
@@ -103,18 +103,31 @@
                 </div>
             </div>
 
-            <!-- Tombol Simpan & Update -->
-            <div class="space-y-4 pt-2">
-                <div class="bg-[#FAF7F2] p-4 rounded-xl border border-[#E8E1D5] space-y-3">
-                    <button type="button" id="githubUpdateBtn" class="w-full bg-[#5A7863] hover:bg-[#496351] text-[#FAF7F2] font-bold py-3 px-4 rounded-xl shadow-md transition duration-200 text-sm flex items-center justify-center gap-2">
-                        SIMPAN & UPDATE
-                    </button>
-                    <p id="githubStatus" class="text-xs font-semibold text-center hidden py-1"></p>
+            <!-- Tombol Simpan & Update + Konfigurasi Token -->
+            <div class="space-y-3 pt-2">
+                <button type="button" id="githubUpdateBtn" class="w-full bg-[#5A7863] hover:bg-[#496351] text-[#FAF7F2] font-bold py-3 px-4 rounded-xl shadow-md transition duration-200 text-sm flex items-center justify-center gap-2 cursor-pointer">
+                    SIMPAN & UPDATE
+                </button>
+                <p id="githubStatus" class="text-xs font-semibold text-center hidden py-1"></p>
 
-                    <p class="text-[11px] text-[#78726A] pt-1">Masukkan GitHub Token Anda sekali saja. Saat tombol diklik, file <code>data.json</code> di GitHub Repository akan otomatis ter-update online!</p>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        <input type="text" id="gh_repo" placeholder="username/repository-name" class="bg-[#F5F0E6] border border-[#E3DCD0] rounded-lg p-2 text-xs font-semibold text-[#33312E]">
-                        <input type="password" id="gh_token" placeholder="GitHub Personal Access Token (ghp_...)" class="bg-[#F5F0E6] border border-[#E3DCD0] rounded-lg p-2 text-xs font-semibold text-[#33312E]">
+                <!-- Panel Konfigurasi Token GitHub (Bisa di-toggle / disembunyikan) -->
+                <div class="bg-[#FAF7F2] p-4 rounded-xl border border-[#E8E1D5] space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-extrabold text-[#8C6D46] uppercase tracking-wider">KONFIGURASI GITHUB TOKEN</span>
+                        <button type="button" id="toggleTokenBtn" class="text-xs font-bold text-[#6B5B7B] hover:underline cursor-pointer">
+                            ⚙️ Tampilkan / Sembunyikan Input Token
+                        </button>
+                    </div>
+
+                    <div id="tokenConfigArea" class="space-y-3 hidden">
+                        <p class="text-[11px] text-[#78726A]">Masukkan Repo & Token sekali di HP/Laptop ini. Klik tombol <b>"SIMPAN KONFIGURASI"</b> agar tersimpan permanen di perangkat ini!</p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <input type="text" id="gh_repo" placeholder="username/repository-name" class="bg-[#F5F0E6] border border-[#E3DCD0] rounded-lg p-2 text-xs font-semibold text-[#33312E]">
+                            <input type="password" id="gh_token" placeholder="GitHub Token (ghp_...)" class="bg-[#F5F0E6] border border-[#E3DCD0] rounded-lg p-2 text-xs font-semibold text-[#33312E]">
+                        </div>
+                        <button type="button" id="saveTokenBtn" class="w-full bg-[#8C7A6B] hover:bg-[#786759] text-white font-bold py-2 px-3 rounded-lg text-xs transition cursor-pointer">
+                            💾 SIMPAN KONFIGURASI TOKEN DI PERANGKAT INI
+                        </button>
                     </div>
                 </div>
             </div>
@@ -183,8 +196,35 @@
             })
             .catch(() => recalculateBaseline());
 
-        document.getElementById('gh_repo').value = localStorage.getItem('gh_repo') || '';
-        document.getElementById('gh_token').value = localStorage.getItem('gh_token') || '';
+        // Muat Repo & Token dari localStorage perangkat
+        const savedRepo = localStorage.getItem('gh_repo') || '';
+        const savedToken = localStorage.getItem('gh_token') || '';
+        document.getElementById('gh_repo').value = savedRepo;
+        document.getElementById('gh_token').value = savedToken;
+
+        // Jika belum ada token tersimpan di perangkat ini, tampilkan kotaknya otomatis
+        if (!savedRepo || !savedToken) {
+            document.getElementById('tokenConfigArea').classList.remove('hidden');
+        }
+
+        // Toggle Tampilkan / Sembunyikan Input Token
+        document.getElementById('toggleTokenBtn').addEventListener('click', () => {
+            document.getElementById('tokenConfigArea').classList.toggle('hidden');
+        });
+
+        // Tombol Simpan Konfigurasi Token di Perangkat
+        document.getElementById('saveTokenBtn').addEventListener('click', () => {
+            const repo = document.getElementById('gh_repo').value.trim();
+            const token = document.getElementById('gh_token').value.trim();
+            if (!repo || !token) {
+                alert("Harap isi Username/Repository dan GitHub Token!");
+                return;
+            }
+            localStorage.setItem('gh_repo', repo);
+            localStorage.setItem('gh_token', token);
+            alert("✅ Konfigurasi GitHub Token BERHASIL tersimpan di HP/Laptop ini! Anda tidak perlu menginputnya lagi nanti.");
+            document.getElementById('tokenConfigArea').classList.add('hidden');
+        });
 
         document.getElementById('tanggal').addEventListener('input', recalculateBaseline);
         ['leads_today', 'closing_today', 'omzet_today'].forEach(id => {
@@ -210,8 +250,8 @@
                         <td class="p-2 text-center">${item.closing_today}</td>
                         <td class="p-2 text-right font-semibold text-[#B3704D]">${formatRupiah(item.omzet_today)}</td>
                         <td class="p-2 text-center space-x-1">
-                            <button type="button" onclick="editEntry('${mKey}', ${index})" class="bg-[#8C6D46] hover:bg-[#735938] text-white px-2 py-1 rounded text-[10px] font-bold transition">EDIT</button>
-                            <button type="button" onclick="deleteEntry('${mKey}', ${index})" class="bg-rose-600 hover:bg-rose-700 text-white px-2 py-1 rounded text-[10px] font-bold transition">HAPUS</button>
+                            <button type="button" onclick="editEntry('${mKey}', ${index})" class="bg-[#8C6D46] hover:bg-[#735938] text-white px-2 py-1 rounded text-[10px] font-bold transition cursor-pointer">EDIT</button>
+                            <button type="button" onclick="deleteEntry('${mKey}', ${index})" class="bg-rose-600 hover:bg-rose-700 text-white px-2 py-1 rounded text-[10px] font-bold transition cursor-pointer">HAPUS</button>
                         </td>
                     </tr>
                 `;
@@ -246,7 +286,7 @@
             if (repo && token) {
                 await updateGitHubData("Menghapus entri tanggal " + item.tanggal);
             } else {
-                alert("Data berhasil dihapus di lokal form, jangan lupa klik SIMPAN & UPDATE!");
+                alert("Data berhasil dihapus di lokal form, jangan lupa simpan konfigurasi Token!");
             }
         };
 
@@ -318,7 +358,8 @@
             const statusEl = document.getElementById('githubStatus');
 
             if (!repo || !token) {
-                alert("Harap isi Username/Repository dan GitHub Token terlebih dahulu!");
+                alert("Harap isi Repo dan Token terlebih dahulu pada 'KONFIGURASI GITHUB TOKEN'!");
+                document.getElementById('tokenConfigArea').classList.remove('hidden');
                 return;
             }
 
@@ -358,4 +399,56 @@
                     statusEl.className = "text-xs font-semibold text-center text-emerald-700 py-1";
                     statusEl.innerText = "BERHASIL SIMPAN & UPDATE BERHASIL.";
                     const inputDate = document.getElementById('tanggal').value.trim();
-  
+                    renderAdminHistoryTable(extractMonthKey(inputDate));
+                } else {
+                    const errData = await putRes.json();
+                    throw new Error(errData.message || "Gagal meng-update file di GitHub.");
+                }
+            } catch (err) {
+                statusEl.className = "text-xs font-semibold text-center text-rose-600 py-1";
+                statusEl.innerText = "❌ Terjadi Kesalahan: " + err.message;
+            }
+        }
+
+        document.getElementById('githubUpdateBtn').addEventListener('click', async () => {
+            const dateStr = document.getElementById('tanggal').value.trim();
+            if (!dateStr) {
+                alert("Tanggal harus diisi!");
+                return;
+            }
+
+            const mKey = extractMonthKey(dateStr);
+            existingData.active_month = mKey;
+            existingData.cs_name = document.getElementById('cs_name').value;
+
+            if (!existingData.months) existingData.months = {};
+            if (!existingData.months[mKey]) {
+                existingData.months[mKey] = {
+                    initial_baseline: { leads: 0, closing: 0, omzet: 0 },
+                    history: []
+                };
+            }
+
+            const newEntry = {
+                tanggal: dateStr,
+                leads_today: parseInt(document.getElementById('leads_today').value) || 0,
+                closing_today: parseInt(document.getElementById('closing_today').value) || 0,
+                omzet_today: parseInt(document.getElementById('omzet_today').value) || 0
+            };
+
+            const historyArr = existingData.months[mKey].history || [];
+            const existingIndex = historyArr.findIndex(h => h.tanggal === newEntry.tanggal);
+            
+            if (existingIndex >= 0) {
+                historyArr[existingIndex] = newEntry;
+            } else {
+                historyArr.push(newEntry);
+            }
+
+            existingData.months[mKey].history = historyArr;
+
+            await updateGitHubData(`Update harian report tanggal ${newEntry.tanggal}`);
+        });
+    </script>
+</body>
+</html>
