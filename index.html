@@ -18,9 +18,9 @@
     <div class="w-full max-w-2xl space-y-4">
         
         <!-- Wadah Laporan Utama yang akan Di-export ke Gambar / PDF -->
-        <div id="captureArea" class="bg-[#F5F0E6] rounded-2xl shadow-lg border border-[#E3DCD0] overflow-hidden space-y-6 pb-6">
+        <div id="captureArea" class="bg-[#F5F0E6] rounded-2xl shadow-lg border border-[#E3DCD0] overflow-hidden space-y-6 pb-6 p-1">
             <!-- Header -->
-            <div class="bg-[#8C7A6B] p-6 text-center shadow-sm space-y-2">
+            <div class="bg-[#8C7A6B] p-6 text-center shadow-sm space-y-2 rounded-t-xl">
                 <h1 class="text-xl md:text-2xl font-bold tracking-wide text-[#FAF7F2]">CLOSING REPORT E-COMMERCE TANGERANG</h1>
                 <div class="flex flex-wrap items-center justify-center gap-2">
                     <div class="inline-flex items-center gap-2 bg-[#FAF7F2]/15 px-4 py-1.5 rounded-full text-xs font-medium backdrop-blur-sm text-[#F0EAE1]">
@@ -116,7 +116,7 @@
             </div>
 
             <!-- Footer -->
-            <div class="bg-[#EFEAE1] px-6 py-4 text-center border-t border-[#E3DCD0] space-y-1">
+            <div class="bg-[#EFEAE1] px-6 py-4 text-center border-t border-[#E3DCD0] space-y-1 rounded-b-xl">
                 <div class="text-xs text-[#8A8379] font-medium">DASHBOARD CLOSING REPORT E-COMMERCE TANGERANG &copy; 2026</div>
                 <div class="text-xs text-[#8C7A6B] font-semibold">by putradwi-dev</div>
             </div>
@@ -264,6 +264,7 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    animation: false,
                     plugins: { legend: { display: false } },
                     scales: {
                         y: { beginAtZero: true, grid: { color: 'rgba(140, 122, 107, 0.1)' }, ticks: { color: '#78726A' } },
@@ -286,6 +287,7 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    animation: false,
                     plugins: {
                         legend: { position: 'bottom', labels: { color: '#78726A', boxWidth: 12, font: { size: 11 } } }
                     }
@@ -293,35 +295,72 @@
             });
         }
 
-        // --- FUNGSI EXPORT & SHARE --- //
+        // --- FUNGSI EXPORT & SHARE STABIL --- //
 
         // 1. Download Gambar (PNG)
-        document.getElementById('downloadImgBtn').addEventListener('click', () => {
-            const captureArea = document.getElementById('captureArea');
-            html2canvas(captureArea, { scale: 2, useCORS: true }).then(canvas => {
+        document.getElementById('downloadImgBtn').addEventListener('click', async () => {
+            const btn = document.getElementById('downloadImgBtn');
+            const originalText = btn.innerHTML;
+            btn.innerText = "⏳ Memproses...";
+            btn.disabled = true;
+
+            try {
+                const captureArea = document.getElementById('captureArea');
+                const canvas = await html2canvas(captureArea, {
+                    scale: 2,
+                    useCORS: true,
+                    allowTaint: true,
+                    backgroundColor: '#FBF9F1',
+                    logging: false
+                });
+
                 const link = document.createElement('a');
-                const tanggal = document.getElementById('display_tanggal').innerText.replace(/\//g, '-');
-                link.download = `Closing_Report_${tanggal}.png`;
+                const tgl = document.getElementById('display_tanggal').innerText.replace(/\//g, '-');
+                link.download = `Closing_Report_${tgl}.png`;
                 link.href = canvas.toDataURL('image/png');
+                document.body.appendChild(link);
                 link.click();
-            });
+                document.body.removeChild(link);
+            } catch (err) {
+                alert("Gagal mengunduh gambar: " + err.message);
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
         });
 
         // 2. Download PDF
-        document.getElementById('downloadPdfBtn').addEventListener('click', () => {
-            const captureArea = document.getElementById('captureArea');
-            html2canvas(captureArea, { scale: 2, useCORS: true }).then(canvas => {
+        document.getElementById('downloadPdfBtn').addEventListener('click', async () => {
+            const btn = document.getElementById('downloadPdfBtn');
+            const originalText = btn.innerHTML;
+            btn.innerText = "⏳ Memproses...";
+            btn.disabled = true;
+
+            try {
+                const captureArea = document.getElementById('captureArea');
+                const canvas = await html2canvas(captureArea, {
+                    scale: 2,
+                    useCORS: true,
+                    allowTaint: true,
+                    backgroundColor: '#FBF9F1',
+                    logging: false
+                });
+
                 const { jsPDF } = window.jspdf;
                 const imgData = canvas.toDataURL('image/png');
-                
                 const pdf = new jsPDF('p', 'mm', 'a4');
                 const pdfWidth = pdf.internal.pageSize.getWidth();
                 const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-                
+
                 pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-                const tanggal = document.getElementById('display_tanggal').innerText.replace(/\//g, '-');
-                pdf.save(`Closing_Report_${tanggal}.pdf`);
-            });
+                const tgl = document.getElementById('display_tanggal').innerText.replace(/\//g, '-');
+                pdf.save(`Closing_Report_${tgl}.pdf`);
+            } catch (err) {
+                alert("Gagal mengunduh PDF: " + err.message);
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
         });
 
         // 3. Share Ringkasan Teks ke WhatsApp
