@@ -6,114 +6,135 @@
     <title>Closing Report E-commerce Tangerang</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Library pendukung Download Gambar PNG & PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
     </style>
 </head>
 <body class="bg-[#FBF9F1] text-[#33312E] min-h-screen p-4 md:p-8 flex items-center justify-center">
-    <div class="w-full max-w-2xl bg-[#F5F0E6] rounded-2xl shadow-lg border border-[#E3DCD0] overflow-hidden space-y-6 pb-6">
-        <!-- Header -->
-        <div class="bg-[#8C7A6B] p-6 text-center shadow-sm space-y-2">
-            <h1 class="text-xl md:text-2xl font-bold tracking-wide text-[#FAF7F2]">CLOSING REPORT E-COMMERCE TANGERANG</h1>
-            <div class="flex flex-wrap items-center justify-center gap-2">
-                <div class="inline-flex items-center gap-2 bg-[#FAF7F2]/15 px-4 py-1.5 rounded-full text-xs font-medium backdrop-blur-sm text-[#F0EAE1]">
-                    <span>👤 <span id="display_cs_name">MARVELL TANGERANG</span></span>
-                    <span>•</span>
-                    <span>📅 <span id="display_tanggal">-</span></span>
+    <div class="w-full max-w-2xl space-y-4">
+        
+        <!-- Wadah Laporan Utama yang akan Di-export ke Gambar / PDF -->
+        <div id="captureArea" class="bg-[#F5F0E6] rounded-2xl shadow-lg border border-[#E3DCD0] overflow-hidden space-y-6 pb-6">
+            <!-- Header -->
+            <div class="bg-[#8C7A6B] p-6 text-center shadow-sm space-y-2">
+                <h1 class="text-xl md:text-2xl font-bold tracking-wide text-[#FAF7F2]">CLOSING REPORT E-COMMERCE TANGERANG</h1>
+                <div class="flex flex-wrap items-center justify-center gap-2">
+                    <div class="inline-flex items-center gap-2 bg-[#FAF7F2]/15 px-4 py-1.5 rounded-full text-xs font-medium backdrop-blur-sm text-[#F0EAE1]">
+                        <span>👤 <span id="display_cs_name">MARVELL TANGERANG</span></span>
+                        <span>•</span>
+                        <span>📅 <span id="display_tanggal">-</span></span>
+                    </div>
+                    <!-- Filter Bulan -->
+                    <select id="monthFilter" class="bg-[#FAF7F2] text-[#33312E] text-xs font-bold px-3 py-1.5 rounded-full border border-[#E3DCD0] focus:outline-none cursor-pointer">
+                    </select>
                 </div>
-                <!-- Filter Bulan -->
-                <select id="monthFilter" class="bg-[#FAF7F2] text-[#33312E] text-xs font-bold px-3 py-1.5 rounded-full border border-[#E3DCD0] focus:outline-none cursor-pointer">
-                </select>
+            </div>
+
+            <!-- Content Body -->
+            <div class="px-6 space-y-6">
+                <!-- Grid Summary Cards (Hari Ini) -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-[#FAF7F2] rounded-xl p-4 border border-[#E8E1D5] shadow-sm">
+                        <h2 class="text-xs font-extrabold text-[#8C6D46] uppercase tracking-wider mb-1">LEADS TODAY</h2>
+                        <div id="display_leads_today" class="text-2xl font-bold text-[#33312E]">0</div>
+                    </div>
+                    <div class="bg-[#FAF7F2] rounded-xl p-4 border border-[#E8E1D5] shadow-sm">
+                        <h2 class="text-xs font-extrabold text-[#5A7863] uppercase tracking-wider mb-1">CLOSING TODAY</h2>
+                        <div class="text-2xl font-bold text-[#5A7863]">
+                            <span id="display_closing_today">0</span> 
+                            <span class="text-xs font-normal text-[#78726A]">(<span id="display_closing_rate">0%</span>)</span>
+                        </div>
+                    </div>
+                    <div class="bg-[#FAF7F2] rounded-xl p-4 border border-[#E8E1D5] shadow-sm">
+                        <h2 class="text-xs font-extrabold text-[#B3704D] uppercase tracking-wider mb-1">OMZET TODAY</h2>
+                        <div id="display_omzet_today" class="text-lg font-bold text-[#B3704D]">Rp0</div>
+                    </div>
+                </div>
+
+                <!-- Charts Section -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-[#FAF7F2] rounded-xl p-4 border border-[#E8E1D5] shadow-sm flex flex-col items-center">
+                        <h2 class="text-xs font-extrabold text-[#8C6D46] uppercase tracking-wider mb-3 w-full text-left">PERFORMA HARIAN (TODAY)</h2>
+                        <div class="w-full h-48 relative flex items-center justify-center">
+                            <canvas id="todayChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="bg-[#FAF7F2] rounded-xl p-4 border border-[#E8E1D5] shadow-sm flex flex-col items-center">
+                        <h2 class="text-xs font-extrabold text-[#6B5B7B] uppercase tracking-wider mb-3 w-full text-left">MTD CONVERSION RATE</h2>
+                        <div class="w-full h-48 relative flex items-center justify-center">
+                            <canvas id="mtdChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MTD Summary (2x2 Grid) -->
+                <div class="bg-[#FAF7F2] rounded-xl p-4 border border-[#E8E1D5] shadow-sm space-y-3">
+                    <h2 class="text-xs font-extrabold text-[#523F63] uppercase tracking-wider mb-3">MTD (MONTH TO DATE) SUMMARY</h2>
+                    <div class="grid grid-cols-2 gap-4 text-center">
+                        <div class="bg-[#F5F0E6] p-4 rounded-lg border border-[#E3DCD0]">
+                            <div class="text-xs font-bold text-[#33312E] uppercase">TOTAL LEADS</div>
+                            <div id="display_total_leads_mtd" class="text-xl font-bold text-[#33312E] mt-1">0</div>
+                        </div>
+                        <div class="bg-[#F5F0E6] p-4 rounded-lg border border-[#E3DCD0]">
+                            <div class="text-xs font-bold text-[#33312E] uppercase">TOTAL CLOSING</div>
+                            <div id="display_total_closing_mtd" class="text-xl font-bold text-[#33312E] mt-1">0</div>
+                        </div>
+                        <div class="bg-[#F5F0E6] p-4 rounded-lg border border-[#E3DCD0]">
+                            <div class="text-xs font-bold text-[#33312E] uppercase">TOTAL OMZET</div>
+                            <div id="display_total_omzet_mtd" class="text-lg md:text-xl font-extrabold text-[#6B5B7B] mt-1">Rp0</div>
+                        </div>
+                        <div class="bg-[#F5F0E6] p-4 rounded-lg border border-[#E3DCD0]">
+                            <div class="text-xs font-bold text-[#33312E] uppercase">CLOSING RATE MTD</div>
+                            <div id="display_closing_rate_mtd" class="text-xl font-bold text-[#6B5B7B] mt-1">0%</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TABEL RIWAYAT HARIAN -->
+                <div class="bg-[#FAF7F2] rounded-xl p-4 border border-[#E8E1D5] space-y-3">
+                    <h2 class="text-xs font-extrabold text-[#8C6D46] uppercase tracking-wider mb-2">RIWAYAT LAPORAN HARIAN</h2>
+                    <div class="overflow-x-auto overflow-y-auto max-h-[220px] rounded-lg border border-[#E3DCD0]">
+                        <table class="w-full text-left border-collapse text-xs">
+                            <thead class="sticky top-0 bg-[#EFEAE1] text-[#78726A] shadow-xs z-10">
+                                <tr class="border-b border-[#E3DCD0]">
+                                    <th class="p-2.5 font-bold">TANGGAL</th>
+                                    <th class="p-2.5 font-bold text-center">LEADS</th>
+                                    <th class="p-2.5 font-bold text-center">CLOSING</th>
+                                    <th class="p-2.5 font-bold text-center">RATE</th>
+                                    <th class="p-2.5 font-bold text-right">OMZET</th>
+                                </tr>
+                            </thead>
+                            <tbody id="historyTableBody" class="divide-y divide-[#E3DCD0] text-[#33312E] bg-white">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="bg-[#EFEAE1] px-6 py-4 text-center border-t border-[#E3DCD0] space-y-1">
+                <div class="text-xs text-[#8A8379] font-medium">DASHBOARD CLOSING REPORT E-COMMERCE TANGERANG &copy; 2026</div>
+                <div class="text-xs text-[#8C7A6B] font-semibold">by putradwi-dev</div>
             </div>
         </div>
 
-        <!-- Content Body -->
-        <div class="px-6 space-y-6">
-            <!-- Grid Summary Cards (Hari Ini) -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div class="bg-[#FAF7F2] rounded-xl p-4 border border-[#E8E1D5] shadow-sm">
-                    <h2 class="text-xs font-extrabold text-[#8C6D46] uppercase tracking-wider mb-1">LEADS TODAY</h2>
-                    <div id="display_leads_today" class="text-2xl font-bold text-[#33312E]">0</div>
-                </div>
-                <div class="bg-[#FAF7F2] rounded-xl p-4 border border-[#E8E1D5] shadow-sm">
-                    <h2 class="text-xs font-extrabold text-[#5A7863] uppercase tracking-wider mb-1">CLOSING TODAY</h2>
-                    <div class="text-2xl font-bold text-[#5A7863]">
-                        <span id="display_closing_today">0</span> 
-                        <span class="text-xs font-normal text-[#78726A]">(<span id="display_closing_rate">0%</span>)</span>
-                    </div>
-                </div>
-                <div class="bg-[#FAF7F2] rounded-xl p-4 border border-[#E8E1D5] shadow-sm">
-                    <h2 class="text-xs font-extrabold text-[#B3704D] uppercase tracking-wider mb-1">OMZET TODAY</h2>
-                    <div id="display_omzet_today" class="text-lg font-bold text-[#B3704D]">Rp0</div>
-                </div>
-            </div>
-
-            <!-- Charts Section -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="bg-[#FAF7F2] rounded-xl p-4 border border-[#E8E1D5] shadow-sm flex flex-col items-center">
-                    <h2 class="text-xs font-extrabold text-[#8C6D46] uppercase tracking-wider mb-3 w-full text-left">PERFORMA HARIAN (TODAY)</h2>
-                    <div class="w-full h-48 relative flex items-center justify-center">
-                        <canvas id="todayChart"></canvas>
-                    </div>
-                </div>
-                <div class="bg-[#FAF7F2] rounded-xl p-4 border border-[#E8E1D5] shadow-sm flex flex-col items-center">
-                    <h2 class="text-xs font-extrabold text-[#6B5B7B] uppercase tracking-wider mb-3 w-full text-left">MTD CONVERSION RATE</h2>
-                    <div class="w-full h-48 relative flex items-center justify-center">
-                        <canvas id="mtdChart"></canvas>
-                    </div>
-                </div>
-            </div>
-
-            <!-- MTD Summary (2x2 Grid) -->
-            <div class="bg-[#FAF7F2] rounded-xl p-4 border border-[#E8E1D5] shadow-sm space-y-3">
-                <h2 class="text-xs font-extrabold text-[#523F63] uppercase tracking-wider mb-3">MTD (MONTH TO DATE) SUMMARY</h2>
-                <div class="grid grid-cols-2 gap-4 text-center">
-                    <div class="bg-[#F5F0E6] p-4 rounded-lg border border-[#E3DCD0]">
-                        <div class="text-xs font-bold text-[#33312E] uppercase">TOTAL LEADS</div>
-                        <div id="display_total_leads_mtd" class="text-xl font-bold text-[#33312E] mt-1">0</div>
-                    </div>
-                    <div class="bg-[#F5F0E6] p-4 rounded-lg border border-[#E3DCD0]">
-                        <div class="text-xs font-bold text-[#33312E] uppercase">TOTAL CLOSING</div>
-                        <div id="display_total_closing_mtd" class="text-xl font-bold text-[#33312E] mt-1">0</div>
-                    </div>
-                    <div class="bg-[#F5F0E6] p-4 rounded-lg border border-[#E3DCD0]">
-                        <div class="text-xs font-bold text-[#33312E] uppercase">TOTAL OMZET</div>
-                        <div id="display_total_omzet_mtd" class="text-lg md:text-xl font-extrabold text-[#6B5B7B] mt-1">Rp0</div>
-                    </div>
-                    <div class="bg-[#F5F0E6] p-4 rounded-lg border border-[#E3DCD0]">
-                        <div class="text-xs font-bold text-[#33312E] uppercase">CLOSING RATE MTD</div>
-                        <div id="display_closing_rate_mtd" class="text-xl font-bold text-[#6B5B7B] mt-1">0%</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- TABEL RIWAYAT HARIAN -->
-            <div class="bg-[#FAF7F2] rounded-xl p-4 border border-[#E8E1D5] space-y-3">
-                <h2 class="text-xs font-extrabold text-[#8C6D46] uppercase tracking-wider mb-2">RIWAYAT LAPORAN HARIAN</h2>
-                <div class="overflow-x-auto overflow-y-auto max-h-[220px] rounded-lg border border-[#E3DCD0]">
-                    <table class="w-full text-left border-collapse text-xs">
-                        <thead class="sticky top-0 bg-[#EFEAE1] text-[#78726A] shadow-xs z-10">
-                            <tr class="border-b border-[#E3DCD0]">
-                                <th class="p-2.5 font-bold">TANGGAL</th>
-                                <th class="p-2.5 font-bold text-center">LEADS</th>
-                                <th class="p-2.5 font-bold text-center">CLOSING</th>
-                                <th class="p-2.5 font-bold text-center">RATE</th>
-                                <th class="p-2.5 font-bold text-right">OMZET</th>
-                            </tr>
-                        </thead>
-                        <tbody id="historyTableBody" class="divide-y divide-[#E3DCD0] text-[#33312E] bg-white">
-                        </tbody>
-                    </table>
-                </div>
+        <!-- Tombol Aksi Export & Share ke WhatsApp -->
+        <div class="bg-[#FAF7F2] p-4 rounded-2xl border border-[#E8E1D5] shadow-sm flex flex-col md:flex-row gap-3 items-center justify-between">
+            <span class="text-xs font-bold text-[#78726A]">BAGIKAN LAPORAN:</span>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 w-full md:w-auto">
+                <button type="button" id="downloadImgBtn" class="bg-[#8C6D46] hover:bg-[#735938] text-white px-3 py-2 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-sm cursor-pointer">
+                    Simpan Gambar
+                </button>
+                <button type="button" id="downloadPdfBtn" class="bg-[#6B5B7B] hover:bg-[#584966] text-white px-3 py-2 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-sm cursor-pointer">
+                    Simpan PDF
+                </button>
             </div>
         </div>
 
-        <!-- Footer -->
-        <div class="bg-[#EFEAE1] px-6 py-4 text-center border-t border-[#E3DCD0] space-y-1">
-            <div class="text-xs text-[#8A8379] font-medium">DASHBOARD CLOSING REPORT E-COMMERCE TANGERANG &copy; 2026</div>
-            <div class="text-xs text-[#8C7A6B] font-semibold">by putradwi-dev</div>
-        </div>
     </div>
 
     <script>
@@ -268,6 +289,69 @@
                 }
             });
         }
+
+        // --- FUNGSI EXPORT & SHARE --- //
+
+        // 1. Download Gambar (PNG)
+        document.getElementById('downloadImgBtn').addEventListener('click', () => {
+            const captureArea = document.getElementById('captureArea');
+            html2canvas(captureArea, { scale: 2, useCORS: true }).then(canvas => {
+                const link = document.createElement('a');
+                const tanggal = document.getElementById('display_tanggal').innerText.replace(/\//g, '-');
+                link.download = `Closing_Report_${tanggal}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            });
+        });
+
+        // 2. Download PDF
+        document.getElementById('downloadPdfBtn').addEventListener('click', () => {
+            const captureArea = document.getElementById('captureArea');
+            html2canvas(captureArea, { scale: 2, useCORS: true }).then(canvas => {
+                const { jsPDF } = window.jspdf;
+                const imgData = canvas.toDataURL('image/png');
+                
+                const pdf = new jsPDF('p', 'mm', 'a4');
+                const pdfWidth = pdf.internal.pageSize.getWidth();
+                const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+                
+                pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+                const tanggal = document.getElementById('display_tanggal').innerText.replace(/\//g, '-');
+                pdf.save(`Closing_Report_${tanggal}.pdf`);
+            });
+        });
+
+        // 3. Share Ringkasan Teks ke WhatsApp
+        document.getElementById('shareWaBtn').addEventListener('click', () => {
+            const cs = document.getElementById('display_cs_name').innerText;
+            const tanggal = document.getElementById('display_tanggal').innerText;
+            const leadsToday = document.getElementById('display_leads_today').innerText;
+            const closingToday = document.getElementById('display_closing_today').innerText;
+            const closingRateToday = document.getElementById('display_closing_rate').innerText;
+            const omzetToday = document.getElementById('display_omzet_today').innerText;
+
+            const totalLeadsMTD = document.getElementById('display_total_leads_mtd').innerText;
+            const totalClosingMTD = document.getElementById('display_total_closing_mtd').innerText;
+            const totalOmzetMTD = document.getElementById('display_total_omzet_mtd').innerText;
+            const closingRateMTD = document.getElementById('display_closing_rate_mtd').innerText;
+
+            const text = `📊 *CLOSING REPORT E-COMMERCE TANGERANG*\n` +
+                         `👤 *CS:* ${cs}\n` +
+                         `📅 *Tanggal:* ${tanggal}\n\n` +
+                         `🔥 *PERFORMA HARI INI:* \n` +
+                         `• Leads Today: *${leadsToday}*\n` +
+                         `• Closing Today: *${closingToday}* (${closingRateToday})\n` +
+                         `• Omzet Today: *${omzetToday}*\n\n` +
+                         `📈 *SUMMARY MTD:* \n` +
+                         `• Total Leads: *${totalLeadsMTD}*\n` +
+                         `• Total Closing: *${totalClosingMTD}*\n` +
+                         `• Closing Rate MTD: *${closingRateMTD}*\n` +
+                         `• Total Omzet MTD: *${totalOmzetMTD}*\n\n` +
+                         `🔗 *Dashboard:* ${window.location.href}`;
+
+            const waUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`;
+            window.open(waUrl, '_blank');
+        });
     </script>
 </body>
 </html>
