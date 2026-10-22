@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Closing Report E-commerce Tangerang</title>
-    <!-- Gunakan Tailwind v3 CDN standar (murni HEX/RGB tanpa oklab) -->
+    <!-- Tailwind v3 CDN standar (tanpa oklab) -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Library html2canvas untuk mengunduh gambar PNG -->
@@ -19,17 +19,23 @@
         
         <!-- Area Dashboard Utama yang Akan Diunduh Sebagai Gambar -->
         <div id="captureArea" class="bg-[#F5F0E6] rounded-2xl shadow-lg border border-[#E3DCD0] overflow-hidden space-y-6 pb-6 p-1">
-            <!-- Header -->
-            <div class="bg-[#8C7A6B] p-6 text-center shadow-sm space-y-2 rounded-t-xl">
+            
+            <!-- Header Rapi & Presisi -->
+            <div class="bg-[#8C7A6B] p-6 text-center shadow-sm space-y-3 rounded-t-xl">
                 <h1 class="text-xl md:text-2xl font-bold tracking-wide text-[#FAF7F2]">CLOSING REPORT E-COMMERCE TANGERANG</h1>
-                <div class="flex flex-wrap items-center justify-center gap-2">
-                    <div class="inline-flex items-center gap-2 bg-[#FAF7F2] bg-opacity-20 px-4 py-1.5 rounded-full text-xs font-medium backdrop-blur-sm text-[#F0EAE1]">
+                
+                <!-- Badge CS & Tanggal (Posisi Pas di Tengah) -->
+                <div class="flex items-center justify-center">
+                    <div class="flex items-center justify-center gap-2 bg-[#786759] text-[#FAF7F2] px-4 py-1.5 rounded-full text-xs font-semibold shadow-xs">
                         <span>👤 <span id="display_cs_name">MARVELL TANGERANG</span></span>
-                        <span>•</span>
+                        <span class="text-[#D3C7BC]">•</span>
                         <span>📅 <span id="display_tanggal">-</span></span>
                     </div>
-                    <!-- Filter Bulan -->
-                    <select id="monthFilter" class="bg-[#FAF7F2] text-[#33312E] text-xs font-bold px-3 py-1.5 rounded-full border border-[#E3DCD0] focus:outline-none cursor-pointer">
+                </div>
+
+                <!-- Filter Bulan -->
+                <div class="flex items-center justify-center pt-1">
+                    <select id="monthFilter" class="bg-[#FAF7F2] text-[#33312E] text-xs font-bold px-3 py-1 rounded-full border border-[#E3DCD0] focus:outline-none cursor-pointer shadow-xs">
                     </select>
                 </div>
             </div>
@@ -287,7 +293,7 @@
             });
         }
 
-        // --- FUNGSI DOWNLOAD GAMBAR PNG MURNI --- //
+        // --- FUNGSI DOWNLOAD GAMBAR PNG --- //
         document.getElementById('downloadImgBtn').addEventListener('click', async () => {
             const btn = document.getElementById('downloadImgBtn');
             const originalText = btn.innerHTML;
@@ -297,7 +303,6 @@
             try {
                 const captureArea = document.getElementById('captureArea');
                 
-                // Panggil html2canvas dengan opsi warna murni
                 const canvas = await html2canvas(captureArea, {
                     scale: 2,
                     useCORS: true,
@@ -306,7 +311,6 @@
                     logging: false
                 });
 
-                // Buat tautan unduhan otomatis
                 const link = document.createElement('a');
                 const tgl = document.getElementById('display_tanggal').innerText.replace(/\//g, '-');
                 link.download = `Closing_Report_${tgl}.png`;
