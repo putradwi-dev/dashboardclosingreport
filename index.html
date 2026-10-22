@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Closing Report E-commerce Tangerang</title>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- Gunakan Tailwind v3 CDN standar agar kompatibel dengan html2canvas -->
+    <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Library pendukung Download Gambar PNG & PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -23,7 +24,7 @@
             <div class="bg-[#8C7A6B] p-6 text-center shadow-sm space-y-2 rounded-t-xl">
                 <h1 class="text-xl md:text-2xl font-bold tracking-wide text-[#FAF7F2]">CLOSING REPORT E-COMMERCE TANGERANG</h1>
                 <div class="flex flex-wrap items-center justify-center gap-2">
-                    <div class="inline-flex items-center gap-2 bg-[#FAF7F2]/15 px-4 py-1.5 rounded-full text-xs font-medium backdrop-blur-sm text-[#F0EAE1]">
+                    <div class="inline-flex items-center gap-2 bg-[#FAF7F2] bg-opacity-20 px-4 py-1.5 rounded-full text-xs font-medium backdrop-blur-sm text-[#F0EAE1]">
                         <span>👤 <span id="display_cs_name">MARVELL TANGERANG</span></span>
                         <span>•</span>
                         <span>📅 <span id="display_tanggal">-</span></span>
@@ -99,7 +100,7 @@
                     <h2 class="text-xs font-extrabold text-[#8C6D46] uppercase tracking-wider mb-2">RIWAYAT LAPORAN HARIAN</h2>
                     <div class="overflow-x-auto overflow-y-auto max-h-[220px] rounded-lg border border-[#E3DCD0]">
                         <table class="w-full text-left border-collapse text-xs">
-                            <thead class="sticky top-0 bg-[#EFEAE1] text-[#78726A] shadow-xs z-10">
+                            <thead class="sticky top-0 bg-[#EFEAE1] text-[#78726A] shadow-sm z-10">
                                 <tr class="border-b border-[#E3DCD0]">
                                     <th class="p-2.5 font-bold">TANGGAL</th>
                                     <th class="p-2.5 font-bold text-center">LEADS</th>
