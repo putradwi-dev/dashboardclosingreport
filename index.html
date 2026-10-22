@@ -24,17 +24,17 @@
             <div class="bg-[#8C7A6B] p-6 text-center shadow-sm space-y-3 rounded-t-xl">
                 <h1 class="text-xl md:text-2xl font-bold tracking-wide text-[#FAF7F2]">CLOSING REPORT E-COMMERCE TANGERANG</h1>
                 
-                <!-- Badge CS & Tanggal (Posisi Pas di Tengah) -->
-                <div class="flex items-center justify-center">
-                    <div class="flex items-center justify-center gap-2 bg-[#786759] text-[#FAF7F2] px-4 py-1.5 rounded-full text-xs font-semibold shadow-xs">
+                <!-- Badge CS & Tanggal (Wadah Tersendiri di Tengah) -->
+                <div class="flex justify-center w-full">
+                    <div class="bg-[#786759] text-[#FAF7F2] px-5 py-2 rounded-full text-xs font-bold shadow-sm inline-flex items-center justify-center gap-2">
                         <span>👤 <span id="display_cs_name">MARVELL TANGERANG</span></span>
                         <span class="text-[#D3C7BC]">•</span>
                         <span>📅 <span id="display_tanggal">-</span></span>
                     </div>
                 </div>
 
-                <!-- Filter Bulan -->
-                <div class="flex items-center justify-center pt-1">
+                <!-- Filter Bulan (Disembunyikan Otomatis Saat Diunduh Gambar) -->
+                <div class="no-export flex justify-center w-full pt-1">
                     <select id="monthFilter" class="bg-[#FAF7F2] text-[#33312E] text-xs font-bold px-3 py-1 rounded-full border border-[#E3DCD0] focus:outline-none cursor-pointer shadow-xs">
                     </select>
                 </div>
@@ -308,7 +308,12 @@
                     useCORS: true,
                     allowTaint: true,
                     backgroundColor: '#FBF9F1',
-                    logging: false
+                    logging: false,
+                    onclone: (clonedDoc) => {
+                        // Sembunyikan elemen dropdown bulan pada salinan dokumen yang dirender ke gambar
+                        const noExportEl = clonedDoc.querySelectorAll('.no-export');
+                        noExportEl.forEach(el => el.style.display = 'none');
+                    }
                 });
 
                 const link = document.createElement('a');
