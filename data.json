@@ -79,11 +79,18 @@
         },
         "11/2026": {
             "initial_baseline": {
-                "leads": 0,
-                "closing": 0,
-                "omzet": 0
+                "leads": 1176,
+                "closing": 499,
+                "omzet": 1713262090
             },
-            "history": []
+            "history": [
+                {
+                    "tanggal": "01/11/2026",
+                    "leads_today": 10,
+                    "closing_today": 10,
+                    "omzet_today": 1000
+                }
+            ]
         }
     }
 }
