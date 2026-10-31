@@ -181,7 +181,6 @@
             return 'Rp' + num.toLocaleString('id-ID');
         }
 
-        // EKSTRAK BULAN YANG FLEKSIBEL (MENDUKUNG '1/11/2026' MAUPUN '01/11/2026')
         function extractMonthKey(dateStr) {
             if (!dateStr || dateStr.length < 8) return existingData.active_month || '10/2026';
             const parts = dateStr.split('/');
@@ -292,7 +291,7 @@
             }
         };
 
-        // --- FUNGSI RECALCULATE DENGAN DETEKSI TANGGAL 1 DAN RESET TANGGAL 2+ --- //
+        // --- FUNGSI RECALCULATE DENGAN ATURAN TANGGAL 2 OTOMATIS RESET KE 0 --- //
         function recalculateBaseline() {
             const inputDate = document.getElementById('tanggal').value.trim();
             const mKey = extractMonthKey(inputDate);
@@ -300,6 +299,10 @@
 
             if (!existingData.months) existingData.months = {};
 
+            const dateParts = inputDate.split('/');
+            const dayNum = dateParts.length > 0 ? parseInt(dateParts[0]) : 1;
+
+            // Jika bulan ini BELUM ADA di data.json, tentukan apakah harus tarik data lalu atau reset 0
             if (!existingData.months[mKey]) {
                 let initialBase = { leads: 0, closing: 0, omzet: 0 };
                 
@@ -307,9 +310,6 @@
                 let curMonth = parseInt(parts[0]);
                 let curYear = parseInt(parts[1]);
                 
-                const dateParts = inputDate.split('/');
-                const dayNum = dateParts.length > 0 ? parseInt(dateParts[0]) : 1;
-
                 curMonth--;
                 if (curMonth < 1) {
                     curMonth = 12;
@@ -317,8 +317,9 @@
                 }
                 const prevMKey = `${String(curMonth).padStart(2, '0')}/${curYear}`;
 
-                // Jika tanggal 1, tarik akumulasi akhir bulan sebelumnya.
-                // Jika tanggal 2 atau lebih, acuan di-reset murni menjadi 0.
+                // ATURAN PENTING:
+                // - Jika input tanggal 1: Tarik akumulasi akhir bulan lalu.
+                // - Jika input tanggal 2 atau lebih (dan belum ada data di bulan ini): Otomatis set baseline 0 (RESET).
                 if (dayNum === 1 && existingData.months[prevMKey]) {
                     const prevData = existingData.months[prevMKey];
                     let pLeads = prevData.initial_baseline.leads || 0;
@@ -341,6 +342,15 @@
                     initial_baseline: initialBase,
                     history: []
                 };
+            } else {
+                // JIKA BULAN TERSEBUT SUDAH ADA, TAPI USER LANGSUNG MENGETIK TANGGAL 2 TANPA ADA RIWAYAT TANGGAL 1
+                // KITA BERIKAN PENGAMANAN AGAR JIKA TANGGAL >= 2 DAN BELUM ADA HISTORY TANGGAL 1, BASELINE DI-RESET KE 0.
+                const mDataCheck = existingData.months[mKey];
+                const hasHistoryDay1 = mDataCheck.history && mDataCheck.history.some(h => h.tanggal.startsWith('01/') || h.tanggal.startsWith('1/'));
+                
+                if (dayNum >= 2 && !hasHistoryDay1) {
+                    mDataCheck.initial_baseline = { leads: 0, closing: 0, omzet: 0 };
+                }
             }
 
             const mData = existingData.months[mKey];
