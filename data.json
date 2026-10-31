@@ -89,12 +89,6 @@
                     "leads_today": 10,
                     "closing_today": 10,
                     "omzet_today": 1000
-                },
-                {
-                    "tanggal": "02/11/2026",
-                    "leads_today": 11,
-                    "closing_today": 11,
-                    "omzet_today": 1111
                 }
             ]
         }
