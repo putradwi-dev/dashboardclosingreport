@@ -220,20 +220,10 @@
             const o_today = latest.omzet_today || 0;
             const closingRateToday = l_today > 0 ? Math.round((c_today / l_today) * 100) : 0;
 
-            // Deteksi tanggal laporan terbaru
-            const latestDateParts = (latest.tanggal || '').split('/');
-            const latestDayNum = latestDateParts.length > 0 ? parseInt(latestDateParts[0]) : 1;
-
-            let totalLeadsMTD = 0;
-            let totalClosingMTD = 0;
-            let totalOmzetMTD = 0;
-
-            // Jika laporan terbaru adalah tanggal 1, kalkulasi MTD menggunakan Baseline + Riwayat Tanggal 1
-            if (latestDayNum === 1) {
-                totalLeadsMTD = baseline.leads || 0;
-                totalClosingMTD = baseline.closing || 0;
-                totalOmzetMTD = baseline.omzet || 0;
-            }
+            // Kalkulasi MTD: Akumulasi penuh dari baseline awal bulan ditambah seluruh riwayat harian bulan tersebut
+            let totalLeadsMTD = baseline.leads || 0;
+            let totalClosingMTD = baseline.closing || 0;
+            let totalOmzetMTD = baseline.omzet || 0;
 
             let tableHtml = '';
             history.forEach(item => {
@@ -242,21 +232,9 @@
                 const o = item.omzet_today || 0;
                 const rate = l > 0 ? Math.round((c / l) * 100) : 0;
 
-                const itemDateParts = (item.tanggal || '').split('/');
-                const itemDayNum = itemDateParts.length > 0 ? parseInt(itemDateParts[0]) : 1;
-
-                // LOGIKA KALKULASI MTD:
-                // - Jika tanggal 1: masuk ke MTD bersama baseline.
-                // - Jika tanggal 2 ke atas: HANYA akumulasikan entri dari tanggal 2 ke atas (Abaikan tanggal 1 agar tidak ganda dengan baseline lama).
-                if (latestDayNum === 1) {
-                    totalLeadsMTD += l;
-                    totalClosingMTD += c;
-                    totalOmzetMTD += o;
-                } else if (itemDayNum >= 2) {
-                    totalLeadsMTD += l;
-                    totalClosingMTD += c;
-                    totalOmzetMTD += o;
-                }
+                totalLeadsMTD += l;
+                totalClosingMTD += c;
+                totalOmzetMTD += o;
 
                 tableHtml += `
                     <tr class="hover:bg-[#F5F0E6] transition duration-150">
