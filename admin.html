@@ -290,15 +290,48 @@
             }
         };
 
+        // --- FUNGSI RECALCULATE DENGAN ATURAN TANGGAL 1 & TANGGAL 2 --- //
         function recalculateBaseline() {
             const inputDate = document.getElementById('tanggal').value.trim();
             const mKey = extractMonthKey(inputDate);
             document.getElementById('disp_month_code').innerText = mKey;
 
             if (!existingData.months) existingData.months = {};
+
             if (!existingData.months[mKey]) {
+                let initialBase = { leads: 0, closing: 0, omzet: 0 };
+                
+                const parts = mKey.split('/');
+                let curMonth = parseInt(parts[0]);
+                let curYear = parseInt(parts[1]);
+                
+                curMonth--;
+                if (curMonth < 1) {
+                    curMonth = 12;
+                    curYear--;
+                }
+                const prevMKey = `${String(curMonth).padStart(2, '0')}/${curYear}`;
+
+                // JIKA INPUT TANGGAL 1, TARIK AKUMULASI AKHIR BULAN SEBELUMNYA.
+                // JIKA INPUT TANGGAL 2 ATAU SELANJUTNYA (DAN BELUM ADA DI JSON), BASE BERNILAI 0 (RESET).
+                if (inputDate.startsWith('01/') && existingData.months[prevMKey]) {
+                    const prevData = existingData.months[prevMKey];
+                    let pLeads = prevData.initial_baseline.leads || 0;
+                    let pClosing = prevData.initial_baseline.closing || 0;
+                    let pOmzet = prevData.initial_baseline.omzet || 0;
+
+                    if (prevData.history && prevData.history.length > 0) {
+                        prevData.history.forEach(h => {
+                            pLeads += parseInt(h.leads_today) || 0;
+                            pClosing += parseInt(h.closing_today) || 0;
+                            pOmzet += parseInt(h.omzet_today) || 0;
+                        });
+                    }
+                    initialBase = { leads: pLeads, closing: pClosing, omzet: pOmzet };
+                }
+
                 existingData.months[mKey] = {
-                    initial_baseline: { leads: 0, closing: 0, omzet: 0 },
+                    initial_baseline: initialBase,
                     history: []
                 };
             }
@@ -370,7 +403,6 @@
             statusEl.classList.add('text-[#8C7A6B]');
             statusEl.innerText = "Sedang memperbarui data ke GitHub...";
 
-            // HAPUS MONTH KEY ANOMALI / TIDAK VALID DARI OBJECT MONTHS
             if (existingData.months) {
                 Object.keys(existingData.months).forEach(k => {
                     if (k.length !== 7 || !k.includes('/')) {
