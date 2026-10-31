@@ -83,14 +83,7 @@
                 "closing": 0,
                 "omzet": 0
             },
-            "history": [
-                {
-                    "tanggal": "01/11/2026",
-                    "leads_today": 1,
-                    "closing_today": 1,
-                    "omzet_today": 1
-                }
-            ]
+            "history": []
         }
     }
 }
