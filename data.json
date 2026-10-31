@@ -83,7 +83,14 @@
                 "closing": 499,
                 "omzet": 1713262090
             },
-            "history": []
+            "history": [
+                {
+                    "tanggal": "01/11/2026",
+                    "leads_today": 1,
+                    "closing_today": 1,
+                    "omzet_today": 1
+                }
+            ]
         }
     }
 }
