@@ -292,7 +292,7 @@
             }
         };
 
-        // --- FUNGSI RECALCULATE: TANGGAL 1 AMBIL BULAN LALU, TANGGAL 2+ RESET KE 0 --- //
+        // --- FUNGSI RECALCULATE DENGAN DETEKSI TANGGAL 1 DAN RESET TANGGAL 2+ --- //
         function recalculateBaseline() {
             const inputDate = document.getElementById('tanggal').value.trim();
             const mKey = extractMonthKey(inputDate);
@@ -307,6 +307,9 @@
                 let curMonth = parseInt(parts[0]);
                 let curYear = parseInt(parts[1]);
                 
+                const dateParts = inputDate.split('/');
+                const dayNum = dateParts.length > 0 ? parseInt(dateParts[0]) : 1;
+
                 curMonth--;
                 if (curMonth < 1) {
                     curMonth = 12;
@@ -314,10 +317,9 @@
                 }
                 const prevMKey = `${String(curMonth).padStart(2, '0')}/${curYear}`;
 
-                // Deteksi apakah input tanggal 1 (mendukung '1/', '01/', atau '1')
-                const isFirstDay = inputDate === '1' || inputDate.startsWith('1/') || inputDate.startsWith('01/');
-
-                if (isFirstDay && existingData.months[prevMKey]) {
+                // Jika tanggal 1, tarik akumulasi akhir bulan sebelumnya.
+                // Jika tanggal 2 atau lebih, acuan di-reset murni menjadi 0.
+                if (dayNum === 1 && existingData.months[prevMKey]) {
                     const prevData = existingData.months[prevMKey];
                     let pLeads = prevData.initial_baseline.leads || 0;
                     let pClosing = prevData.initial_baseline.closing || 0;
@@ -332,7 +334,6 @@
                     }
                     initialBase = { leads: pLeads, closing: pClosing, omzet: pOmzet };
                 } else {
-                    // Jika tanggal 2 atau seterusnya di awal bulan, acuan di-reset menjadi 0
                     initialBase = { leads: 0, closing: 0, omzet: 0 };
                 }
 
