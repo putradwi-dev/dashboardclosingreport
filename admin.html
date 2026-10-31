@@ -291,7 +291,7 @@
             }
         };
 
-        // --- FUNGSI RECALCULATE PERBAIKAN EDIT: MEMPERTAHANKAN DATA ACUAN KUMULATIF SEBELUMNYA --- //
+        // --- FUNGSI RECALCULATE LOGIKA PRESISI --- //
         function recalculateBaseline() {
             const inputDate = document.getElementById('tanggal').value.trim();
             const mKey = extractMonthKey(inputDate);
@@ -302,85 +302,71 @@
             const dateParts = inputDate.split('/');
             const dayNum = dateParts.length > 0 ? parseInt(dateParts[0]) : 1;
 
-            const parts = mKey.split('/');
-            let curMonth = parseInt(parts[0]);
-            let curYear = parseInt(parts[1]);
-            
-            curMonth--;
-            if (curMonth < 1) {
-                curMonth = 12;
-                curYear--;
-            }
-            const prevMKey = `${String(curMonth).padStart(2, '0')}/${curYear}`;
+            let cumL = 0;
+            let cumC = 0;
+            let cumO = 0;
 
-            let initialBase = { leads: 0, closing: 0, omzet: 0 };
-
-            if (dayNum === 1 && existingData.months[prevMKey]) {
-                const prevData = existingData.months[prevMKey];
-                let pLeads = prevData.initial_baseline.leads || 0;
-                let pClosing = prevData.initial_baseline.closing || 0;
-                let pOmzet = prevData.initial_baseline.omzet || 0;
-
-                if (prevData.history && prevData.history.length > 0) {
-                    prevData.history.forEach(h => {
-                        pLeads += parseInt(h.leads_today) || 0;
-                        pClosing += parseInt(h.closing_today) || 0;
-                        pOmzet += parseInt(h.omzet_today) || 0;
-                    });
+            if (dayNum === 1) {
+                // TANGGAL 01: Tarik seluruh data akumulasi dari bulan sebelumnya
+                const parts = mKey.split('/');
+                let curMonth = parseInt(parts[0]);
+                let curYear = parseInt(parts[1]);
+                
+                curMonth--;
+                if (curMonth < 1) {
+                    curMonth = 12;
+                    curYear--;
                 }
-                initialBase = { leads: pLeads, closing: pClosing, omzet: pOmzet };
-            } else if (dayNum >= 2 && selectedMonthRule(mKey)) {
-                // Untuk bulan Nov+ saat tanggal 2+, baseline awal mutlak 0
-                initialBase = { leads: 0, closing: 0, omzet: 0 };
-            } else {
-                // Untuk bulan Oktober atau bulan ber-baseline awal
-                if (existingData.months[mKey] && existingData.months[mKey].initial_baseline) {
-                    initialBase = existingData.months[mKey].initial_baseline;
-                }
-            }
+                const prevMKey = `${String(curMonth).padStart(2, '0')}/${curYear}`;
 
-            if (!existingData.months[mKey]) {
-                existingData.months[mKey] = {
-                    initial_baseline: initialBase,
-                    history: []
-                };
-            }
+                if (existingData.months[prevMKey]) {
+                    const prevData = existingData.months[prevMKey];
+                    cumL = prevData.initial_baseline?.leads || 0;
+                    cumC = prevData.initial_baseline?.closing || 0;
+                    cumO = prevData.initial_baseline?.omzet || 0;
 
-            const mData = existingData.months[mKey];
-            const base = (dayNum >= 2 && selectedMonthRule(mKey)) ? { leads: 0, closing: 0, omzet: 0 } : (mData.initial_baseline || initialBase);
-            
-            let cumL = base.leads || 0;
-            let cumC = base.closing || 0;
-            let cumO = base.omzet || 0;
-
-            // Akumulasikan riwayat harian sebelum tanggal yang sedang di-input / diedit
-            if (mData.history && mData.history.length > 0) {
-                mData.history.forEach(item => {
-                    if (inputDate && item.tanggal !== inputDate) {
-                        if (item.tanggal < inputDate) {
-                            const isNovPlus = selectedMonthRule(mKey);
-                            const itemDay = parseInt(item.tanggal.split('/')[0]) || 1;
-                            if (isNovPlus && dayNum >= 2 && itemDay === 1) {
-                                // Lewati tanggal 1 jika tanggal 2+ di bulan Nov+
-                            } else {
-                                cumL += parseInt(item.leads_today) || 0;
-                                cumC += parseInt(item.closing_today) || 0;
-                                cumO += parseInt(item.omzet_today) || 0;
-                            }
-                        }
+                    if (prevData.history && prevData.history.length > 0) {
+                        prevData.history.forEach(h => {
+                            cumL += parseInt(h.leads_today) || 0;
+                            cumC += parseInt(h.closing_today) || 0;
+                            cumO += parseInt(h.omzet_today) || 0;
+                        });
                     }
-                });
+                }
+            } else {
+                // TANGGAL 02 S/D AKHIR BULAN: 
+                // Baseline awal bulan di-reset 0, lalu hitung akumulasi riwayat tanggal-tanggal sebelumnya di bulan ini
+                if (existingData.months[mKey]) {
+                    const mData = existingData.months[mKey];
+                    
+                    // Khusus bulan Oktober (10/2026) mempertahankan baseline awal
+                    if (mKey === "10/2026") {
+                        cumL = mData.initial_baseline?.leads || 0;
+                        cumC = mData.initial_baseline?.closing || 0;
+                        cumO = mData.initial_baseline?.omzet || 0;
+                    }
+
+                    if (mData.history && mData.history.length > 0) {
+                        mData.history.forEach(item => {
+                            if (inputDate && item.tanggal !== inputDate && item.tanggal < inputDate) {
+                                // Untuk bulan Nov+, jangan sertakan data tanggal 01 saat di tanggal 02+
+                                const itemDay = parseInt(item.tanggal.split('/')[0]) || 1;
+                                if (mKey !== "10/2026" && itemDay === 1) {
+                                    // Abaikan tanggal 1
+                                } else {
+                                    cumL += parseInt(item.leads_today) || 0;
+                                    cumC += parseInt(item.closing_today) || 0;
+                                    cumO += parseInt(item.omzet_today) || 0;
+                                }
+                            }
+                        });
+                    }
+                }
             }
 
-            if (dayNum >= 2 && selectedMonthRule(mKey)) {
-                activePrevL = cumL;
-                activePrevC = cumC;
-                activePrevO = cumO;
-            } else {
-                activePrevL = cumL;
-                activePrevC = cumC;
-                activePrevO = cumO;
-            }
+            activePrevL = cumL;
+            activePrevC = cumC;
+            activePrevO = cumO;
 
             document.getElementById('disp_prev_leads').innerText = activePrevL.toLocaleString('id-ID');
             document.getElementById('disp_prev_closing').innerText = activePrevC.toLocaleString('id-ID');
@@ -388,11 +374,6 @@
 
             renderAdminHistoryTable(mKey);
             calculatePreview();
-        }
-
-        function selectedMonthRule(mKey) {
-            // Aturan reset tanggal 2 berlaku mulai bulan 11/2026 dan seterusnya
-            return mKey !== "10/2026";
         }
 
         function calculatePreview() {
@@ -496,6 +477,35 @@
                     initial_baseline: { leads: 0, closing: 0, omzet: 0 },
                     history: []
                 };
+            }
+
+            const dateParts = dateStr.split('/');
+            const dayNum = dateParts.length > 0 ? parseInt(dateParts[0]) : 1;
+            
+            // Simpan initial_baseline ke data.json jika tanggal 1
+            if (dayNum === 1) {
+                const parts = mKey.split('/');
+                let curMonth = parseInt(parts[0]) - 1;
+                let curYear = parseInt(parts[1]);
+                if (curMonth < 1) { curMonth = 12; curYear--; }
+                const prevMKey = `${String(curMonth).padStart(2, '0')}/${curYear}`;
+                
+                if (existingData.months[prevMKey]) {
+                    const prevData = existingData.months[prevMKey];
+                    let pL = prevData.initial_baseline?.leads || 0;
+                    let pC = prevData.initial_baseline?.closing || 0;
+                    let pO = prevData.initial_baseline?.omzet || 0;
+                    if (prevData.history) {
+                        prevData.history.forEach(h => {
+                            pL += parseInt(h.leads_today) || 0;
+                            pC += parseInt(h.closing_today) || 0;
+                            pO += parseInt(h.omzet_today) || 0;
+                        });
+                    }
+                    existingData.months[mKey].initial_baseline = { leads: pL, closing: pC, omzet: pO };
+                }
+            } else if (mKey !== "10/2026") {
+                existingData.months[mKey].initial_baseline = { leads: 0, closing: 0, omzet: 0 };
             }
 
             const newEntry = {
