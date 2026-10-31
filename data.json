@@ -1,6 +1,6 @@
 {
     "cs_name": "MARVELL TANGERANG",
-    "active_month": "10/2026",
+    "active_month": "11/2026",
     "months": {
         "10/2026": {
             "initial_baseline": {
@@ -74,6 +74,21 @@
                     "leads_today": 34,
                     "closing_today": 5,
                     "omzet_today": 11684200
+                }
+            ]
+        },
+        "11/2026": {
+            "initial_baseline": {
+                "leads": 1176,
+                "closing": 499,
+                "omzet": 1713262090
+            },
+            "history": [
+                {
+                    "tanggal": "01/11/2026",
+                    "leads_today": 25,
+                    "closing_today": 10,
+                    "omzet_today": 20000000
                 }
             ]
         }
