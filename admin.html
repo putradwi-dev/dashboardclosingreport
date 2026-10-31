@@ -291,7 +291,7 @@
             }
         };
 
-        // --- FUNGSI RECALCULATE: TANGGAL 1 AMBIL BULAN LALU, TANGGAL 2+ RESET ACUAN KE 0 --- //
+// --- FUNGSI RECALCULATE FINAL: TANGGAL 1 AMBIL BULAN LALU, TANGGAL 2+ RESET KE 0 --- //
         function recalculateBaseline() {
             const inputDate = document.getElementById('tanggal').value.trim();
             const mKey = extractMonthKey(inputDate);
@@ -316,9 +316,9 @@
                 }
                 const prevMKey = `${String(curMonth).padStart(2, '0')}/${curYear}`;
 
-                // ATURAN BARU:
-                // - Jika input tanggal 1: Tarik akumulasi akhir bulan lalu.
-                // - Jika input tanggal 2 atau seterusnya: Acuan awal bulan dipaksa 0 (RESET).
+                // ATURAN UTAMA YANG BENAR:
+                // - Jika input tanggal 1: Tarik akumulasi akhir bulan sebelumnya.
+                // - Jika input tanggal 2 atau lebih: Acuan awal bulan di-reset menjadi 0.
                 if (dayNum === 1 && existingData.months[prevMKey]) {
                     const prevData = existingData.months[prevMKey];
                     let pLeads = prevData.initial_baseline.leads || 0;
@@ -333,7 +333,7 @@
                         });
                     }
                     initialBase = { leads: pLeads, closing: pClosing, omzet: pOmzet };
-                } else {
+                } else if (dayNum >= 2) {
                     initialBase = { leads: 0, closing: 0, omzet: 0 };
                 }
 
@@ -342,10 +342,34 @@
                     history: []
                 };
             } else {
-                // JIKA BULAN SUDAH ADA, NAMUN KITA INGIN KETIKA TANGGAL >= 2 PANEL ACUAN BERSIH MENJADI 0
+                // JIKA BULAN SUDAH ADA DI DATA:
+                // Pastikan jika diketik tanggal 2+, panel acuan murni di-reset 0. Jika tanggal 1, ambil data bulan lalu.
                 const mDataCheck = existingData.months[mKey];
                 if (dayNum >= 2) {
                     mDataCheck.initial_baseline = { leads: 0, closing: 0, omzet: 0 };
+                } else if (dayNum === 1) {
+                    const parts = mKey.split('/');
+                    let curMonth = parseInt(parts[0]);
+                    let curYear = parseInt(parts[1]);
+                    curMonth--;
+                    if (curMonth < 1) { curMonth = 12; curYear--; }
+                    const prevMKey = `${String(curMonth).padStart(2, '0')}/${curYear}`;
+                    
+                    if (existingData.months[prevMKey]) {
+                        const prevData = existingData.months[prevMKey];
+                        let pLeads = prevData.initial_baseline.leads || 0;
+                        let pClosing = prevData.initial_baseline.closing || 0;
+                        let pOmzet = prevData.initial_baseline.omzet || 0;
+
+                        if (prevData.history && prevData.history.length > 0) {
+                            prevData.history.forEach(h => {
+                                pLeads += parseInt(h.leads_today) || 0;
+                                pClosing += parseInt(h.closing_today) || 0;
+                                pOmzet += parseInt(h.omzet_today) || 0;
+                            });
+                        }
+                        mDataCheck.initial_baseline = { leads: pLeads, closing: pClosing, omzet: pOmzet };
+                    }
                 }
             }
 
