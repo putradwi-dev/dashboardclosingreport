@@ -291,7 +291,7 @@
             }
         };
 
-        // --- FUNGSI RECALCULATE DENGAN ATURAN TANGGAL 2 OTOMATIS RESET KE 0 --- //
+        // --- FUNGSI RECALCULATE: TANGGAL 1 AMBIL BULAN LALU, TANGGAL 2+ RESET ACUAN KE 0 --- //
         function recalculateBaseline() {
             const inputDate = document.getElementById('tanggal').value.trim();
             const mKey = extractMonthKey(inputDate);
@@ -302,7 +302,6 @@
             const dateParts = inputDate.split('/');
             const dayNum = dateParts.length > 0 ? parseInt(dateParts[0]) : 1;
 
-            // Jika bulan ini BELUM ADA di data.json, tentukan apakah harus tarik data lalu atau reset 0
             if (!existingData.months[mKey]) {
                 let initialBase = { leads: 0, closing: 0, omzet: 0 };
                 
@@ -317,9 +316,9 @@
                 }
                 const prevMKey = `${String(curMonth).padStart(2, '0')}/${curYear}`;
 
-                // ATURAN PENTING:
+                // ATURAN BARU:
                 // - Jika input tanggal 1: Tarik akumulasi akhir bulan lalu.
-                // - Jika input tanggal 2 atau lebih (dan belum ada data di bulan ini): Otomatis set baseline 0 (RESET).
+                // - Jika input tanggal 2 atau seterusnya: Acuan awal bulan dipaksa 0 (RESET).
                 if (dayNum === 1 && existingData.months[prevMKey]) {
                     const prevData = existingData.months[prevMKey];
                     let pLeads = prevData.initial_baseline.leads || 0;
@@ -343,12 +342,9 @@
                     history: []
                 };
             } else {
-                // JIKA BULAN TERSEBUT SUDAH ADA, TAPI USER LANGSUNG MENGETIK TANGGAL 2 TANPA ADA RIWAYAT TANGGAL 1
-                // KITA BERIKAN PENGAMANAN AGAR JIKA TANGGAL >= 2 DAN BELUM ADA HISTORY TANGGAL 1, BASELINE DI-RESET KE 0.
+                // JIKA BULAN SUDAH ADA, NAMUN KITA INGIN KETIKA TANGGAL >= 2 PANEL ACUAN BERSIH MENJADI 0
                 const mDataCheck = existingData.months[mKey];
-                const hasHistoryDay1 = mDataCheck.history && mDataCheck.history.some(h => h.tanggal.startsWith('01/') || h.tanggal.startsWith('1/'));
-                
-                if (dayNum >= 2 && !hasHistoryDay1) {
+                if (dayNum >= 2) {
                     mDataCheck.initial_baseline = { leads: 0, closing: 0, omzet: 0 };
                 }
             }
