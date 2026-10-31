@@ -181,12 +181,14 @@
             return 'Rp' + num.toLocaleString('id-ID');
         }
 
-        // VALIDASI HANYA AMBIL BULAN JIKA FORMAT TANGGAL SUDAH LENGKAP (DD/MM/YYYY)
+        // EKSTRAK BULAN YANG FLEKSIBEL (MENDUKUNG '1/11/2026' MAUPUN '01/11/2026')
         function extractMonthKey(dateStr) {
-            if (!dateStr || dateStr.length < 10) return existingData.active_month || '10/2026';
+            if (!dateStr || dateStr.length < 8) return existingData.active_month || '10/2026';
             const parts = dateStr.split('/');
-            if (parts.length === 3 && parts[1].length === 2 && parts[2].length === 4) {
-                return `${parts[1]}/${parts[2]}`;
+            if (parts.length === 3) {
+                const month = parts[1].padStart(2, '0');
+                const year = parts[2];
+                return `${month}/${year}`;
             }
             return existingData.active_month || '10/2026';
         }
@@ -290,7 +292,7 @@
             }
         };
 
-        // --- FUNGSI RECALCULATE DENGAN ATURAN TANGGAL 1 & TANGGAL 2 --- //
+        // --- FUNGSI RECALCULATE: TANGGAL 1 AMBIL BULAN LALU, TANGGAL 2+ RESET KE 0 --- //
         function recalculateBaseline() {
             const inputDate = document.getElementById('tanggal').value.trim();
             const mKey = extractMonthKey(inputDate);
@@ -312,9 +314,10 @@
                 }
                 const prevMKey = `${String(curMonth).padStart(2, '0')}/${curYear}`;
 
-                // JIKA INPUT TANGGAL 1, TARIK AKUMULASI AKHIR BULAN SEBELUMNYA.
-                // JIKA INPUT TANGGAL 2 ATAU SELANJUTNYA (DAN BELUM ADA DI JSON), BASE BERNILAI 0 (RESET).
-                if (inputDate.startsWith('01/') && existingData.months[prevMKey]) {
+                // Deteksi apakah input tanggal 1 (mendukung '1/', '01/', atau '1')
+                const isFirstDay = inputDate === '1' || inputDate.startsWith('1/') || inputDate.startsWith('01/');
+
+                if (isFirstDay && existingData.months[prevMKey]) {
                     const prevData = existingData.months[prevMKey];
                     let pLeads = prevData.initial_baseline.leads || 0;
                     let pClosing = prevData.initial_baseline.closing || 0;
@@ -328,6 +331,9 @@
                         });
                     }
                     initialBase = { leads: pLeads, closing: pClosing, omzet: pOmzet };
+                } else {
+                    // Jika tanggal 2 atau seterusnya di awal bulan, acuan di-reset menjadi 0
+                    initialBase = { leads: 0, closing: 0, omzet: 0 };
                 }
 
                 existingData.months[mKey] = {
@@ -453,8 +459,8 @@
 
         document.getElementById('githubUpdateBtn').addEventListener('click', async () => {
             const dateStr = document.getElementById('tanggal').value.trim();
-            if (!dateStr || dateStr.length < 10) {
-                alert("Tanggal harus diisi lengkap dengan format DD/MM/YYYY (contoh: 22/10/2026)!");
+            if (!dateStr || dateStr.length < 8) {
+                alert("Format tanggal tidak valid!");
                 return;
             }
 
